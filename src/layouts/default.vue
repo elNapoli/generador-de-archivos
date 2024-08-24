@@ -2,7 +2,10 @@
   <v-app>
     <v-layout>
       <header-app @toggle-drawer="openDrawer = !openDrawer" />
-      <navigation-drawer :open="openDrawer" />
+      <navigation-drawer
+        :open="openDrawer"
+        @drawer:close="openDrawer=false"
+      />
       <v-main>
         <slot />
       </v-main>

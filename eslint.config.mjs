@@ -14,7 +14,7 @@ export default withNuxt({
   rules: {
     // Desactiva la regla que requiere nombres de componentes con múltiples palabras
     'vue/multi-word-component-names': 'off',
-
+    '@typescript-eslint/no-explicit-any': 'error',
     // Permite modificadores en v-slot
     'vue/valid-v-slot': ['error', {
       allowModifiers: true,

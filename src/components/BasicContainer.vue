@@ -3,6 +3,7 @@
     fluid
     max-width="960"
   >
+    <slot name="breadcrumbs" />
     <slot />
   </v-container>
 </template>

@@ -14,8 +14,19 @@
           vertical
         />
         <v-spacer />
-        <document-new-item-dialog
+        <v-btn
+          class="text-none font-weight-regular"
+          prepend-icon="mdi:folder-wrench"
+          text="Agregar atributo"
+          variant="tonal"
+          @click="dialog=true"
+        />
+        <templates-new-item-dialog
+          :item="currentAttribute"
           :title="formTitle"
+          :open="dialog"
+          @dialog:close="dialog=false"
+          @update:item="documentStore.createOrEditAttribute($event)"
         />
 
         <v-dialog
@@ -23,8 +34,8 @@
           max-width="500px"
         >
           <v-card>
-            <v-card-title class="text-h5">
-              Are you sure you want to delete this item?
+            <v-card-title>
+              ¿Seguro que deseas eliminar este atributo?
             </v-card-title>
             <v-card-actions>
               <v-spacer />
@@ -40,7 +51,7 @@
                 variant="text"
                 @click="deleteItemConfirm"
               >
-                OK
+                Eliminar
               </v-btn>
               <v-spacer />
             </v-card-actions>
@@ -49,16 +60,22 @@
       </v-toolbar>
     </template>
     <template #item.actions="{ item }">
-      <v-btn
-        class="me-2"
+      <v-icon
+        class="mr-2"
         icon="mdi:pencil"
         @click="editItem(item)"
       />
-      <v-btn
-        class="me-2"
+      <v-icon
         icon="mdi:delete"
         @click="deleteItem(item)"
       />
+    </template>
+    <template #item.required="{ value }">
+      <v-chip :color="getColor(value)">
+        <v-icon
+          :icon="value? 'mdi:check':'mdi:close'"
+        />
+      </v-chip>
     </template>
     <template #no-data>
       <p>No hay atributos en el documento actual</p>
@@ -69,12 +86,14 @@
 <script setup>
 const dialog = ref(false)
 const dialogDelete = ref(false)
-const props = defineProps({
+defineProps({
   data: {
     type: Array,
     required: true,
   },
 })
+const documentStore = useDocumentStore()
+const { currentAttribute } = storeToRefs(documentStore)
 const headers = [
   {
     title: 'Nombre',
@@ -86,74 +105,27 @@ const headers = [
   { title: 'Actions', key: 'actions', sortable: false },
 ]
 
-const editedIndex = ref(-1)
-
-const editedItem = ref({
-  name: '',
-  calories: 0,
-  fat: 0,
-  carbs: 0,
-  protein: 0,
-})
-
-const defaultItem = {
-  name: '',
-  calories: 0,
-  fat: 0,
-  carbs: 0,
-  protein: 0,
-}
-
-const formTitle = computed(() => (editedIndex.value === -1 ? 'Agregar atributo' : 'Editar atributo'))
+const formTitle = computed(() => (currentAttribute.value.name === null ? 'Agregar atributo' : 'Editar atributo'))
 
 const editItem = (item) => {
-  editedIndex.value = desserts.value.indexOf(item)
-  editedItem.value = { ...item }
+  documentStore.setCurrentAttribute(item)
   dialog.value = true
+}
+const getColor = (value) => {
+  if (value) return 'green'
+  else return 'red'
 }
 
 const deleteItem = (item) => {
-  editedIndex.value = desserts.value.indexOf(item)
-  editedItem.value = { ...item }
+  documentStore.setCurrentAttribute(item)
   dialogDelete.value = true
 }
-
 const deleteItemConfirm = () => {
-  desserts.value.splice(editedIndex.value, 1)
+  documentStore.deleteAttribute()
   closeDelete()
-}
-
-const close = () => {
-  dialog.value = false
-  nextTick(() => {
-    editedItem.value = { ...defaultItem }
-    editedIndex.value = -1
-  })
 }
 
 const closeDelete = () => {
   dialogDelete.value = false
-  nextTick(() => {
-    editedItem.value = { ...defaultItem }
-    editedIndex.value = -1
-  })
 }
-
-const save = () => {
-  if (editedIndex.value > -1) {
-    Object.assign(desserts.value[editedIndex.value], editedItem.value)
-  }
-  else {
-    desserts.value.push(editedItem.value)
-  }
-  close()
-}
-
-watch(dialog, (val) => {
-  if (!val) close()
-})
-
-watch(dialogDelete, (val) => {
-  if (!val) closeDelete()
-})
 </script>

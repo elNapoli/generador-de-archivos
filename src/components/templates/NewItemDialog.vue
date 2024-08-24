@@ -1,19 +1,10 @@
 <template>
   <div class="pa-4 text-center">
     <v-dialog
-      v-model="dialog"
+      :model-value="open"
       max-width="600"
+      @update:model-value="closeDialog"
     >
-      <template #activator="{ props: activatorProps }">
-        <v-btn
-          class="text-none font-weight-regular"
-          prepend-icon="mdi:folder-wrench"
-          text="Agregar atributo"
-          variant="tonal"
-          v-bind="activatorProps"
-        />
-      </template>
-
       <v-card
         prepend-icon="mdi:folder-wrench"
         :title="title"
@@ -26,7 +17,7 @@
               sm="6"
             >
               <v-text-field
-                v-model="currentAttribute.name"
+                v-model="localItem.name"
                 label="Nombre*"
                 required
               />
@@ -38,7 +29,7 @@
               sm="6"
             >
               <v-select
-                v-model="currentAttribute.type"
+                v-model="localItem.type"
                 :items="['String', 'Int']"
                 label="Tipo*"
                 required
@@ -51,7 +42,7 @@
               sm="6"
             >
               <v-checkbox
-                v-model="currentAttribute.required"
+                v-model="localItem.required"
                 label="Obligatorio"
               />
             </v-col>
@@ -66,14 +57,14 @@
           <v-btn
             text="Close"
             variant="plain"
-            @click="dialog = false"
+            @click="closeDialog"
           />
 
           <v-btn
             color="primary"
             text="Save"
             variant="tonal"
-            @click="dialog = false"
+            @click="saveItem"
           />
         </v-card-actions>
       </v-card>
@@ -82,14 +73,36 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     required: true,
   },
+  item: {
+    type: Object,
+    required: true,
+  },
+  open: {
+    type: Boolean,
+    required: true,
+  },
 })
 
-const documentStore = useDocumentStore()
-const { currentAttribute } = storeToRefs(documentStore)
-const dialog = ref(false)
+const emit = defineEmits(['update:item', 'dialog:close'])
+
+const localItem = ref({ ...props.item })
+
+// Watch for changes in props.item and update localItem
+watch(() => props.item, (newVal) => {
+  localItem.value = { ...newVal }
+})
+
+const closeDialog = () => {
+  emit('dialog:close', false)
+}
+
+const saveItem = () => {
+  emit('update:item', localItem.value)
+  closeDialog()
+}
 </script>

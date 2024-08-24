@@ -3,7 +3,7 @@
     <template #breadcrumbs>
       <Breadcrumb />
     </template>
-    baldomero
+    documentos
   </basic-container>
 </template>
 
