@@ -26,4 +26,8 @@ export const breadcrumbsConfig = {
     title: 'Home',
     disabled: true,
   }],
+  '/documents': [home, {
+    title: 'Documentos',
+    disabled: true,
+  }],
 }
