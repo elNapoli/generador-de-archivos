@@ -87,7 +87,8 @@ export default defineNuxtPlugin((app) => {
     },
     defaults: {
       VTextField: { variant: 'outlined' },
-
+      VTextarea: { variant: 'outlined' },
+      VSelect: { variant: 'outlined' },
     },
   })
   app.vueApp.use(vuetify)

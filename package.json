@@ -18,6 +18,7 @@
     "@pinia/nuxt": "^0.5.4",
     "eslint": "^9.9.1",
     "nuxt": "^3.13.0",
+    "vee-validate": "^4.13.2",
     "vite-plugin-vuetify": "^2.0.4",
     "vue": "latest",
     "vuetify": "^3.7.0"

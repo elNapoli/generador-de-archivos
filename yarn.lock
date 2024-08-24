@@ -741,14 +741,9 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@eslint/js@9.9.1", "@eslint/js@^9.9.0":
+"@eslint/js@9.9.1", "@eslint/js@^9.9.0", "@eslint/js@^9.9.1":
   version "9.9.1"
   resolved "https://registry.npmjs.org/@eslint/js/-/js-9.9.1.tgz"
-  integrity sha512-xIDQRsfg5hNBqHz04H1R3scSVwmI+KUbqjsQKHKQ1DAUSaUjYPReZZmS/5PNiKu1fUvzDd6H7DEDKACSEhu+TQ==
-
-"@eslint/js@^9.9.1":
-  version "9.9.1"
-  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.9.1.tgz#4a97e85e982099d6c7ee8410aacb55adaa576f06"
   integrity sha512-xIDQRsfg5hNBqHz04H1R3scSVwmI+KUbqjsQKHKQ1DAUSaUjYPReZZmS/5PNiKu1fUvzDd6H7DEDKACSEhu+TQ==
 
 "@eslint/object-schema@^2.1.4":
@@ -2086,7 +2081,7 @@
     "@vue/compiler-dom" "3.4.38"
     "@vue/shared" "3.4.38"
 
-"@vue/devtools-api@^6.5.0", "@vue/devtools-api@^6.6.3":
+"@vue/devtools-api@^6.5.0", "@vue/devtools-api@^6.6.1", "@vue/devtools-api@^6.6.3":
   version "6.6.3"
   resolved "https://registry.npmjs.org/@vue/devtools-api/-/devtools-api-6.6.3.tgz"
   integrity sha512-0MiMsFma/HqA6g3KLKn+AGpL1kgKhFWszC9U29NfpWK5LE7bjeXxySWJrOJ77hBz+TBrBQ7o4QJqbPbqbs8rJw==
@@ -6324,6 +6319,11 @@ type-fest@^3.8.0:
   resolved "https://registry.npmjs.org/type-fest/-/type-fest-3.13.1.tgz"
   integrity sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==
 
+type-fest@^4.8.3:
+  version "4.25.0"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.25.0.tgz#b190374f969631866889bbdb01ece17ca424ee60"
+  integrity sha512-bRkIGlXsnGBRBQRAY56UXBm//9qH4bmJfFvq83gSz41N282df+fjy8ofcEgc1sM8geNt5cl6mC2g9Fht1cs8Aw==
+
 typescript-eslint@^8.2.0:
   version "8.2.0"
   resolved "https://registry.yarnpkg.com/typescript-eslint/-/typescript-eslint-8.2.0.tgz#90d75636b663a9f5e391e9b3a33f3031236a25c8"
@@ -6542,6 +6542,14 @@ validate-npm-package-license@^3.0.1:
   dependencies:
     spdx-correct "^3.0.0"
     spdx-expression-parse "^3.0.0"
+
+vee-validate@^4.13.2:
+  version "4.13.2"
+  resolved "https://registry.yarnpkg.com/vee-validate/-/vee-validate-4.13.2.tgz#cf601c9ac029d58a15aecc1dbab28b15628f0a0e"
+  integrity sha512-HlpR/6MJ92TW9f135umMZKUqdd/tFQTxLNSf2ImbU4Y/MlLVAUpF1l64VdjTOhbClAqPjCb5p/SqHDxLpUHXrw==
+  dependencies:
+    "@vue/devtools-api" "^6.6.1"
+    type-fest "^4.8.3"
 
 vite-hot-client@^0.2.3:
   version "0.2.3"

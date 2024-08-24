@@ -3,21 +3,26 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   srcDir: 'src',
   devtools: { enabled: true },
+
   build: {
     transpile: ['vuetify'],
   },
+
   runtimeConfig: {
     public: {},
     apiSecret: 'ejemplossss',
   },
+
   pinia: {
     storesDirs: ['./src/stores/**'],
   },
+
   imports: {
     dirs: [
-      'services',
+      'services/*.ts', 'models/*.ts',
     ],
   },
+
   modules: [
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
@@ -31,11 +36,17 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
   ],
+
   eslint: {
     config: {
       stylistic: true,
     },
   },
+
+  alias: {
+    '@type': `${__dirname}/src/type`,
+  },
+
   vite: {
     vue: {
       template: {
@@ -43,4 +54,6 @@ export default defineNuxtConfig({
       },
     },
   },
+
+  compatibilityDate: '2024-08-24',
 })

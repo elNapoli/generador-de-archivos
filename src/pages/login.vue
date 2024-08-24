@@ -27,8 +27,9 @@
                   v-model="email"
                   :readonly="loading"
                   :rules="[required]"
+                  placeholder="ejemplo@gmail.com"
                   class="mb-2"
-                  label="Email"
+                  label="Correo electrónico"
                   clearable
                 />
 
@@ -36,8 +37,8 @@
                   v-model="password"
                   :readonly="loading"
                   :rules="[required]"
-                  label="Password"
-                  placeholder="Enter your password"
+                  label="Contraseña"
+                  placeholder="Ingresa tu contraseña"
                   clearable
                 />
 
@@ -82,7 +83,7 @@ const onSubmit = async () => {
 
   try {
     await authStore.signInWithPassword()
-    console.log('Inicio de sesión exitoso')
+    await navigateTo('/')
   }
   catch (err) {
     console.error('Error al iniciar sesión:', err)
