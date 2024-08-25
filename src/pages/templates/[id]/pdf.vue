@@ -6,8 +6,7 @@
     <quill-editor
       id="quill-editor"
       ref="quillDescr"
-      v-model:content="currentTemplate.content"
-      content-type="html"
+      v-model:content="quillContent"
       toolbar="#my"
       theme="snow"
     >
@@ -31,10 +30,12 @@
 </template>
 
 <script setup>
-const quillDescr = ref(null)
+import Delta from 'quill-delta'
 
+const quillDescr = ref(null)
 const templateStore = useTemplateStore()
 const { currentTemplate, loading } = storeToRefs(templateStore)
+const quillContent = ref(new Delta(currentTemplate.value.content))
 
 const insertText = (newText) => {
   const quill = quillDescr.value.getQuill()
@@ -48,6 +49,10 @@ const savePdfTemplate = async () => {
     path: `/templates`,
   })
 }
+
+watch(quillContent, (newValue) => {
+  currentTemplate.value.content = newValue
+}, { deep: true })
 </script>
 
 <style lang="">

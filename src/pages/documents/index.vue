@@ -73,7 +73,7 @@
           class="mr-2"
           icon="bxs:file-export"
           color="blue"
-          @click="exportPdf(item)"
+          @click="llenar(item)"
         />
         <v-icon
           icon="mdi:delete"
@@ -92,10 +92,30 @@
         <p>No hay atributos en el documento actual</p>
       </template>
     </v-data-table>
+    <quill-editor
+      id="quill-editor"
+      ref="quillDescr"
+      v-model:content="quillContent"
+      toolbar="#false"
+      read-only
+      theme="snow"
+    >
+      <template #toolbar>
+        <div id="false">
+          <p>Preview del documento</p>
+        </div>
+      </template>
+    </quill-editor>
+    <v-btn @click="exportToPDF">
+      exportar
+    </v-btn>
   </basic-container>
 </template>
 
 <script setup>
+import Delta from 'quill-delta'
+import { saveAs } from 'file-saver'
+
 const dialog = ref(false)
 const dialogDelete = ref(false)
 defineProps({
@@ -107,6 +127,9 @@ defineProps({
 const templateStore = useTemplateStore()
 const documentStore = useDocumentStore()
 const { documents, currentDocument } = storeToRefs(documentStore)
+const quillDescr = ref(null)
+
+const quillContent = ref('')
 const headers = [
   {
     title: 'Nombre',
@@ -116,17 +139,32 @@ const headers = [
   { title: 'Estado', key: 'status' },
   { title: 'Actions', key: 'actions', sortable: false },
 ]
-const replaceTemplatePlaceholders = (template, attributes) => {
-  // Utiliza una expresión regular para encontrar todas las ocurrencias de {{KEY}}
-  return template.replace(/{{(\w+)}}/g, (_, key) => {
-    // Devuelve el valor correspondiente en el objeto attributes o un string vacío si no se encuentra
-    return attributes[key] || ''
+const replaceTemplatePlaceholders = (delta, attributes) => {
+  // Recorre todos los objetos en el array "ops"
+  return delta.ops.map((op) => {
+    if (typeof op.insert === 'string') {
+      // Si "insert" es un string, realiza el reemplazo
+      return {
+        ...op,
+        insert: op.insert.replace(/{{(\w+)}}/g, (_, key) => attributes[key] || ''),
+      }
+    }
+    // Si "insert" no es un string, lo dejamos como está
+    return op
   })
 }
 
-const exportPdf = (doc) => {
-  const result = replaceTemplatePlaceholders(doc.document_templates.content, doc.attributes)
-  console.log(result)
+const llenar = async (doc) => {
+  const temp = replaceTemplatePlaceholders(doc.document_templates.content, doc.attributes)
+  quillContent.value = new Delta(temp)
+}
+const exportToPDF = async () => {
+  const { pdfExporter } = await import('quill-to-pdf')
+  const delta = quillDescr.value.getContents()
+  const deltaString = JSON.stringify(delta)
+  const finalData = JSON.parse(deltaString)
+  const blob = await pdfExporter.generatePdf(finalData)
+  saveAs(blob, 'documento-ejemplo.pdf') // downloads from the browser
 }
 const editItem = async (item) => {
   await documentStore.setCurrentDocument(item)
