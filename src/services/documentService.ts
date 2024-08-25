@@ -13,6 +13,17 @@ class DocumentService {
     return input.toUpperCase().replace(/\s+/g, '_')
   }
 
+  async savePdfContent(tempalteId: number, jsonObject: JSON) {
+    return safeExecute(() =>
+      this.supabase
+        .from('document_templates')
+        .update({
+          content: jsonObject,
+        })
+        .eq('id', tempalteId),
+    )
+  }
+
   // Obtener todas las plantillas del usuario
   async fetchMyTemplates() {
     return safeExecute(() =>
@@ -22,7 +33,8 @@ class DocumentService {
           id,
           name,
           description,
-          document_attributes(id, name, type, required, code_name)
+          document_attributes(id, name, type, required, code_name),
+          content
         `),
     )
   }

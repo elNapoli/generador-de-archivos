@@ -83,6 +83,7 @@ export default defineNuxtPlugin((app) => {
       aliases,
       sets: {
         mdi: iconify('mdi'),
+        bxs: iconify('bxs'),
       },
     },
     defaults: {

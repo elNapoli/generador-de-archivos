@@ -69,8 +69,15 @@
           icon="mdi:pencil"
           @click="editItem(item)"
         />
+
+        <v-icon
+          class="mr-2"
+          icon="bxs:file-pdf"
+          @click="createPdf(item)"
+        />
         <v-icon
           icon="mdi:delete"
+          color="red"
           @click="deleteItem(item)"
         />
       </template>
@@ -113,6 +120,12 @@ const editItem = async (item) => {
   documentStore.setCurrentTemplate(item)
   await navigateTo({
     path: `/templates/${item.id}`,
+  })
+}
+const createPdf = async (item) => {
+  documentStore.setCurrentTemplate(item)
+  await navigateTo({
+    path: `/templates/${item.id}/pdf`,
   })
 }
 const deleteItem = (item) => {

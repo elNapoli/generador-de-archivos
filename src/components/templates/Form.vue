@@ -11,7 +11,8 @@
       label="Descripción"
     />
     <templates-item-attribute-table
-      class="my-5"
+      class="my-4"
+      :template-id="currentTemplate.id"
       :data="currentTemplate.document_attributes"
     />
     <v-btn
@@ -28,7 +29,6 @@
 <script setup>
 const documentStore = useDocumentStore()
 const { currentTemplate, loading } = storeToRefs(documentStore)
-console.log(currentTemplate.id)
 </script>
 
 <style lang="">

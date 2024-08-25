@@ -6,7 +6,7 @@
     <templates-form />
     <div class="text-center pa-4">
       <v-dialog
-        v-model="operationCreateResult.success"
+        v-model="apiResponse.success"
         max-width="400"
         persistent
       >
@@ -30,10 +30,10 @@
 
 <script setup>
 const documentStore = useDocumentStore()
-const { operationCreateResult } = storeToRefs(documentStore)
+const { apiResponse } = storeToRefs(documentStore)
 
 const handleSuccess = async () => {
-  documentStore.resetOperationCreateResult()
+  documentStore.resetapiResponse()
   await navigateTo({
     path: `/templates`,
   })

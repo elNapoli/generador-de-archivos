@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import type { DocumentAttribute } from '../types/DocumentAttribute'
-import type { OperationResult } from '../utils/handleAsyncOperation'
+import type { apiResponse } from '../utils/handleAsyncOperation'
 import { handleAsyncOperation } from '../utils/handleAsyncOperation'
 import { useNuxtApp } from '#app'
 
@@ -8,16 +8,11 @@ export const useDocumentStore = defineStore('documentStore', {
   state: () => ({
     templates: [],
     loading: false,
-    operationCreateResult: {
+    apiResponse: {
       success: false,
       data: false,
       message: '',
-    } as unknown as OperationResult<boolean> | null,
-    operationDeleteResult: {
-      success: false,
-      data: false,
-      message: '',
-    } as unknown as OperationResult<boolean> | null,
+    } as unknown as apiResponse<boolean> | null,
     currentTemplate: {
       name: '',
       description: '',
@@ -32,40 +27,47 @@ export const useDocumentStore = defineStore('documentStore', {
   actions: {
     async saveOrUpdateTemplate() {
       const { $documentService } = useNuxtApp()
-      this.operationCreateResult = await handleAsyncOperation(
+      this.apiResponse = await handleAsyncOperation(
         () => $documentService.saveOrUpdateTemplate(this.currentTemplate),
         loading => this.loading = loading,
-        error => this.operationCreateResult = { success: false, data: false, message: error },
-        message => this.operationCreateResult = { success: true, data: true, message: message },
+        error => this.apiResponse = { success: false, data: false, message: error },
+        message => this.apiResponse = { success: true, data: true, message: message },
       )
-      return this.operationResult
+      return this.apiResponse
+    },
+    async savePdfContent(jsonObject: JSON) {
+      const { $documentService } = useNuxtApp()
+      this.apiResponse = await handleAsyncOperation(
+        () => $documentService.savePdfContent(this.currentTemplate.id, jsonObject),
+        loading => this.loading = loading,
+        error => this.apiResponse = { success: false, data: false, message: error },
+        message => this.apiResponse = { success: true, data: true, message: message },
+      )
+      return this.apiResponse
     },
     async fetchMyTemplates() {
       const { $documentService } = useNuxtApp()
-      this.operationResult = await handleAsyncOperation(
+      return await handleAsyncOperation(
         async () => {
           const data = await $documentService.fetchMyTemplates()
           this.templates = data.data
           return data
         },
         loading => this.loading = loading,
-        error => this.operationResult = { success: false, data: null, message: error },
-        message => this.operationResult = { success: true, data: null, message: message },
+        (_) => {},
+        (_) => {},
       )
-      return this.operationResult
     },
     async deleteTemplate() {
       const { $documentService } = useNuxtApp()
-      this.operationDeleteResult = await handleAsyncOperation(
+      return await handleAsyncOperation(
         () => $documentService.deleteTemplate(this.currentTemplate.id),
         loading => this.loading = loading,
-        error => this.operationDeleteResult = { success: false, data: null, message: error },
-        (message) => {
-          this.operationDeleteResult = { success: true, data: null, message: message }
+        (_) => {},
+        (_) => {
           this.templates = this.templates.filter(t => t.id !== this.currentTemplate.id)
         },
       )
-      return this.operationResult
     },
     createOrEditAttribute(attribute: DocumentAttribute) {
       const index = this.currentTemplate.document_attributes.findIndex(attr => attr.name === attribute.name)
@@ -102,12 +104,12 @@ export const useDocumentStore = defineStore('documentStore', {
         document_attributes: [],
       }
     },
-    resetOperationCreateResult() {
-      this.operationCreateResult = {
+    resetapiResponse() {
+      this.apiResponse = {
         success: false,
         data: false,
         message: '',
-      } as unknown as OperationResult<boolean>
+      } as unknown as apiResponse<boolean>
     },
   },
 })

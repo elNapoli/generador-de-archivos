@@ -15,6 +15,14 @@
         />
         <v-spacer />
         <v-btn
+          v-if="templateId"
+          class="text-none font-weight-regular mr-2"
+          prepend-icon="bxs:file-pdf"
+          text="PDF"
+          variant="tonal"
+          @click="createPdf"
+        />
+        <v-btn
           class="text-none font-weight-regular"
           prepend-icon="mdi:folder-wrench"
           text="Agregar atributo"
@@ -67,6 +75,7 @@
       />
       <v-icon
         icon="mdi:delete"
+        color="red"
         @click="deleteItem(item)"
       />
     </template>
@@ -84,12 +93,18 @@
 </template>
 
 <script setup>
+import { number } from '~~/node_modules/@intlify/core-base/dist/core-base'
+
 const dialog = ref(false)
 const dialogDelete = ref(false)
-defineProps({
+const props = defineProps({
   data: {
     type: Array,
     required: true,
+  },
+  templateId: {
+    type: number,
+    default: null,
   },
 })
 const documentStore = useDocumentStore()
@@ -127,5 +142,10 @@ const deleteItemConfirm = () => {
 
 const closeDelete = () => {
   dialogDelete.value = false
+}
+const createPdf = async () => {
+  await navigateTo({
+    path: `/templates/${props.templateId}/pdf`,
+  })
 }
 </script>
