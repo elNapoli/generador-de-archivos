@@ -4,7 +4,7 @@ import type { apiResponse } from '../utils/handleAsyncOperation'
 import { handleAsyncOperation } from '../utils/handleAsyncOperation'
 import { useNuxtApp } from '#app'
 
-export const useDocumentStore = defineStore('documentStore', {
+export const useTemplateStore = defineStore('templateStore', {
   state: () => ({
     templates: [],
     loading: false,
@@ -27,9 +27,9 @@ export const useDocumentStore = defineStore('documentStore', {
   }),
   actions: {
     async saveOrUpdateTemplate() {
-      const { $documentService } = useNuxtApp()
+      const { $templateService } = useNuxtApp()
       this.apiResponse = await handleAsyncOperation(
-        () => $documentService.saveOrUpdateTemplate(this.currentTemplate),
+        () => $templateService.saveOrUpdateTemplate(this.currentTemplate),
         loading => this.loading = loading,
         error => this.apiResponse = { success: false, data: false, message: error },
         message => this.apiResponse = { success: true, data: true, message: message },
@@ -37,9 +37,9 @@ export const useDocumentStore = defineStore('documentStore', {
       return this.apiResponse
     },
     async savePdfContent() {
-      const { $documentService } = useNuxtApp()
+      const { $templateService } = useNuxtApp()
       this.apiResponse = await handleAsyncOperation(
-        () => $documentService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content),
+        () => $templateService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content),
         loading => this.loading = loading,
         error => this.apiResponse = { success: false, data: false, message: error },
         message => this.apiResponse = { success: true, data: true, message: message },
@@ -47,10 +47,10 @@ export const useDocumentStore = defineStore('documentStore', {
       return this.apiResponse
     },
     async fetchMyTemplates() {
-      const { $documentService } = useNuxtApp()
+      const { $templateService } = useNuxtApp()
       return await handleAsyncOperation(
         async () => {
-          const data = await $documentService.fetchMyTemplates()
+          const data = await $templateService.fetchMyTemplates()
           this.templates = data.data
           return data
         },
@@ -60,9 +60,9 @@ export const useDocumentStore = defineStore('documentStore', {
       )
     },
     async deleteTemplate() {
-      const { $documentService } = useNuxtApp()
+      const { $templateService } = useNuxtApp()
       return await handleAsyncOperation(
-        () => $documentService.deleteTemplate(this.currentTemplate.id),
+        () => $templateService.deleteTemplate(this.currentTemplate.id),
         loading => this.loading = loading,
         (_) => {},
         (_) => {

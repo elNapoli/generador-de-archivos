@@ -33,8 +33,8 @@
 <script setup>
 const quillDescr = ref(null)
 
-const documentStore = useDocumentStore()
-const { currentTemplate, loading } = storeToRefs(documentStore)
+const templateStore = useTemplateStore()
+const { currentTemplate, loading } = storeToRefs(templateStore)
 
 const insertText = (newText) => {
   const quill = quillDescr.value.getQuill()
@@ -42,8 +42,8 @@ const insertText = (newText) => {
   quill.insertText(selection.index, `{{${newText}}}`, 'bold', true)
 }
 const savePdfTemplate = async () => {
-  await documentStore.savePdfContent()
-  documentStore.resetapiResponse()
+  await templateStore.savePdfContent()
+  templateStore.resetapiResponse()
   await navigateTo({
     path: `/templates`,
   })

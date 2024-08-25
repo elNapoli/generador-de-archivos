@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Template } from '../types/Template'
 
-class DocumentService {
+class TemplateService {
   private supabase: SupabaseClient
 
   constructor(supabase: SupabaseClient) {
@@ -160,4 +160,4 @@ class DocumentService {
   }
 }
 
-export default DocumentService
+export default TemplateService

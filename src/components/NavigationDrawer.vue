@@ -35,7 +35,7 @@ const items = [
     href: '/templates',
   },
   {
-    title: 'Documentos generados',
+    title: 'Documentos',
     icon: 'mdi:file-document-arrow-right-outline',
     href: '/documents',
   },

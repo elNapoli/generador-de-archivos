@@ -10,6 +10,11 @@ const template = {
   disabled: false,
   to: '/templates',
 }
+const documents = {
+  title: 'Documentos',
+  disabled: false,
+  to: '/documents',
+}
 
 // Función para generar un breadcrumb dinámico basado en el ID del template
 function generateTemplateBreadcrumb(id, disabled: boolean) {
@@ -39,8 +44,8 @@ export const breadcrumbsConfig = {
     title: 'Home',
     disabled: true,
   }],
-  '/documents': [home, {
-    title: 'Documentos',
+  '/documents/create': [home, documents, {
+    title: 'Crear',
     disabled: true,
   }],
 }

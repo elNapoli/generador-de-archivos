@@ -34,7 +34,7 @@
           :title="formTitle"
           :open="dialog"
           @dialog:close="dialog=false"
-          @update:item="documentStore.createOrEditAttribute($event)"
+          @update:item="templateStore.createOrEditAttribute($event)"
         />
 
         <v-dialog
@@ -107,8 +107,8 @@ const props = defineProps({
     default: null,
   },
 })
-const documentStore = useDocumentStore()
-const { currentAttribute } = storeToRefs(documentStore)
+const templateStore = useTemplateStore()
+const { currentAttribute } = storeToRefs(templateStore)
 const headers = [
   {
     title: 'Nombre',
@@ -123,7 +123,7 @@ const headers = [
 const formTitle = computed(() => (currentAttribute.value.name === null ? 'Agregar atributo' : 'Editar atributo'))
 
 const editItem = (item) => {
-  documentStore.setCurrentAttribute(item)
+  templateStore.setCurrentAttribute(item)
   dialog.value = true
 }
 const getColor = (value) => {
@@ -132,11 +132,11 @@ const getColor = (value) => {
 }
 
 const deleteItem = (item) => {
-  documentStore.setCurrentAttribute(item)
+  templateStore.setCurrentAttribute(item)
   dialogDelete.value = true
 }
 const deleteItemConfirm = () => {
-  documentStore.deleteAttribute()
+  templateStore.deleteAttribute()
   closeDelete()
 }
 

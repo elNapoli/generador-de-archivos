@@ -1,5 +1,5 @@
 <template lang="">
-  <form @submit.prevent=" documentStore.saveOrUpdateTemplate()">
+  <form @submit.prevent=" templateStore.saveOrUpdateTemplate()">
     <v-text-field
       v-model="currentTemplate.name"
       :counter="50"
@@ -27,8 +27,8 @@
 </template>
 
 <script setup>
-const documentStore = useDocumentStore()
-const { currentTemplate, loading } = storeToRefs(documentStore)
+const templateStore = useTemplateStore()
+const { currentTemplate, loading } = storeToRefs(templateStore)
 </script>
 
 <style lang="">

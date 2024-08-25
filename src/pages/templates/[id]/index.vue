@@ -29,11 +29,11 @@
 </template>
 
 <script setup>
-const documentStore = useDocumentStore()
-const { apiResponse } = storeToRefs(documentStore)
+const templateStore = useTemplateStore()
+const { apiResponse } = storeToRefs(templateStore)
 
 const handleSuccess = async () => {
-  documentStore.resetapiResponse()
+  templateStore.resetapiResponse()
   await navigateTo({
     path: `/templates`,
   })

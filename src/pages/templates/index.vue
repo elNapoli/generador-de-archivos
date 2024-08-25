@@ -30,7 +30,7 @@
             :title="formTitle"
             :open="dialog"
             @dialog:close="dialog=false"
-            @update:item="documentStore.createOrEditAttribute($event)"
+            @update:item="templateStore.createOrEditAttribute($event)"
           />
 
           <v-dialog
@@ -104,8 +104,8 @@ defineProps({
     required: true,
   },
 })
-const documentStore = useDocumentStore()
-const { templates } = storeToRefs(documentStore)
+const templateStore = useTemplateStore()
+const { templates } = storeToRefs(templateStore)
 const headers = [
   {
     title: 'Nombre',
@@ -117,29 +117,29 @@ const headers = [
 ]
 
 const editItem = async (item) => {
-  documentStore.setCurrentTemplate(item)
+  templateStore.setCurrentTemplate(item)
   await navigateTo({
     path: `/templates/${item.id}`,
   })
 }
 const createPdf = async (item) => {
-  documentStore.setCurrentTemplate(item)
+  templateStore.setCurrentTemplate(item)
   await navigateTo({
     path: `/templates/${item.id}/pdf`,
   })
 }
 const deleteItem = (item) => {
-  documentStore.setCurrentTemplate(item)
+  templateStore.setCurrentTemplate(item)
   dialogDelete.value = true
 }
 const deleteItemConfirm = () => {
-  documentStore.deleteTemplate()
+  templateStore.deleteTemplate()
   closeDelete()
 }
 const closeDelete = () => {
   dialogDelete.value = false
 }
 onMounted(() => {
-  documentStore.fetchMyTemplates()
+  templateStore.fetchMyTemplates()
 })
 </script>
