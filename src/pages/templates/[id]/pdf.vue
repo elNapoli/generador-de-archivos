@@ -54,7 +54,3 @@ watch(quillContent, (newValue) => {
   currentTemplate.value.content = newValue
 }, { deep: true })
 </script>
-
-<style lang="">
-/* Add any custom styles here */
-</style>
