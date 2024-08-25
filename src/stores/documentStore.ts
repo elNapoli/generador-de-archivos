@@ -15,6 +15,7 @@ export const useDocumentStore = defineStore('documentStore', {
     } as unknown as apiResponse<boolean> | null,
     currentTemplate: {
       name: '',
+      content: ``,
       description: '',
       document_attributes: [],
     },
@@ -35,10 +36,10 @@ export const useDocumentStore = defineStore('documentStore', {
       )
       return this.apiResponse
     },
-    async savePdfContent(jsonObject: JSON) {
+    async savePdfContent() {
       const { $documentService } = useNuxtApp()
       this.apiResponse = await handleAsyncOperation(
-        () => $documentService.savePdfContent(this.currentTemplate.id, jsonObject),
+        () => $documentService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content),
         loading => this.loading = loading,
         error => this.apiResponse = { success: false, data: false, message: error },
         message => this.apiResponse = { success: true, data: true, message: message },
