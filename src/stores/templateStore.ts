@@ -14,16 +14,11 @@ export const useTemplateStore = defineStore('templateStore', {
       message: '',
     } as unknown as apiResponse<boolean> | null,
     currentTemplate: {
-      name: '',
-      content: ``,
-      description: '',
+      name: null,
+      id: null,
       document_attributes: [],
     },
-    currentAttribute: {
-      name: null,
-      type: null,
-      required: false,
-    } as unknown as DocumentAttribute,
+    currentAttribute: {},
   }),
   actions: {
     async saveOrUpdateTemplate() {
@@ -87,6 +82,9 @@ export const useTemplateStore = defineStore('templateStore', {
     setCurrentTemplate(template: object) {
       this.currentTemplate = template
     },
+    setCurrentTemplateById(templateId: number) {
+      this.currentTemplate = this.templates.find(t => t.id === templateId)
+    },
     deleteAttribute() {
       this.currentTemplate.document_attributes = this.currentTemplate.document_attributes.filter(attr => attr.name !== this.currentAttribute.name)
       this.resetCurrentAttribute()
@@ -100,8 +98,8 @@ export const useTemplateStore = defineStore('templateStore', {
     },
     resetCurrentTemplate() {
       this.currentTemplate = {
-        name: '',
-        description: '',
+        name: null,
+        id: null,
         document_attributes: [],
       }
     },

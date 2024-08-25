@@ -8,11 +8,7 @@
 </template>
 
 <script setup>
-const templateStore = useTemplateStore()
 
-onMounted(() => {
-  templateStore.fetchMyTemplates()
-})
 </script>
 
 <style lang="">
