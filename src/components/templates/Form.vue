@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <form @submit.prevent="templateStore.createOrUpdateTemplate()">
     <v-text-field
       v-model="currentTemplate.name"
@@ -31,6 +31,6 @@ const templateStore = useTemplateStore()
 const { currentTemplate } = storeToRefs(templateStore)
 </script>
 
-<style lang="">
+<style>
 
 </style>

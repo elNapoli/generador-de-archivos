@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <basic-container>
     <template #breadcrumbs>
       <Breadcrumb />
@@ -11,6 +11,6 @@
 
 </script>
 
-<style lang="">
+<style>
 
 </style>

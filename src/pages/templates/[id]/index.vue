@@ -30,7 +30,7 @@
 
 <script setup>
 const feedbackStore = useFeedbackStore()
-const showModal = computed(() =>  feedbackStore.isSuccess())
+const showModal = computed(() => feedbackStore.isSuccess())
 
 const handleSuccess = async () => {
   await navigateTo({

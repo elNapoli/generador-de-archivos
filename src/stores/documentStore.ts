@@ -24,6 +24,7 @@ export const useDocumentStore = defineStore('documentStore', {
         return await $documentService.saveOrUpdateDocument(this.currentDocument.name, templateId, attributesValueJson)
       }
       catch (e) {
+        console.log(e)
         return null
       }
     },
@@ -40,6 +41,7 @@ export const useDocumentStore = defineStore('documentStore', {
         })
       }
       catch (e) {
+        console.log(e)
         return null
       }
     },
@@ -51,6 +53,7 @@ export const useDocumentStore = defineStore('documentStore', {
         this.documents = this.documents.filter(t => t.id !== this.currentDocument.id)
       }
       catch (e) {
+        console.log(e)
         return null
       }
     },

@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <basic-container>
     <template #breadcrumbs>
       <Breadcrumb />
@@ -7,11 +7,9 @@
   </basic-container>
 </template>
 
-<script setup >
-const feedbackStore = useFeedbackStore()
-
+<script setup>
 </script>
 
-<style lang="">
+<style>
 
 </style>

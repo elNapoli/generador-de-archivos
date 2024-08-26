@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <form @submit.prevent="handleSubmit">
     <v-text-field
       v-model="currentDocument.name"
@@ -46,6 +46,6 @@ const handleSubmit = async () => {
 const editMode = computed(() => currentDocument.value?.id != null)
 </script>
 
-<style lang="">
+<style>
 
 </style>

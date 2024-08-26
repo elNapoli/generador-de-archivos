@@ -67,6 +67,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/authStore' // Asegúrate de que la ruta sea correcta
 import { FeedbackState } from '~/stores/feedbackStore'
+
 definePageMeta({
   layout: 'public',
 })
@@ -89,18 +90,17 @@ const required = (v) => {
 
 watch(
   () => feedbackStore.status,
-  async (newStatus:FeedbackState) => {
-    if(newStatus === FeedbackState.SUCCESS){
+  async (newStatus: FeedbackState) => {
+    if (newStatus === FeedbackState.SUCCESS) {
       console.log(newStatus)
       await navigateTo('/')
     }
-  }
+  },
 )
 
 onUnmounted(() => {
   feedbackStore.resetState()
 })
-
 </script>
 
 <style scoped>

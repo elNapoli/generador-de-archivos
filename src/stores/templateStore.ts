@@ -19,8 +19,8 @@ export const useTemplateStore = defineStore('templateStore', {
       const feedbackStore = useFeedbackStore()
       feedbackStore.setLoading()
       try {
-         await $templateService.saveOrUpdateTemplate(this.currentTemplate)
-         feedbackStore.setSuccess("Se guardó el template exitosamente")
+        await $templateService.saveOrUpdateTemplate(this.currentTemplate)
+        feedbackStore.setSuccess('Se guardó el template exitosamente')
       }
       catch (e) {
         feedbackStore.setError(e)
@@ -31,8 +31,8 @@ export const useTemplateStore = defineStore('templateStore', {
       const feedbackStore = useFeedbackStore()
       feedbackStore.setLoading()
       try {
-         await $templateService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
-         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+        await $templateService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
+        feedbackStore.setSuccess('Se guardó el contenido del pdf exitosamente')
       }
       catch (e) {
         feedbackStore.setError(e)
@@ -43,8 +43,8 @@ export const useTemplateStore = defineStore('templateStore', {
       const feedbackStore = useFeedbackStore()
       feedbackStore.setLoading()
       try {
-         await $templateService.saveOrUpdateTemplate(this.currentTemplate)
-         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+        await $templateService.saveOrUpdateTemplate(this.currentTemplate)
+        feedbackStore.setSuccess('Se guardó el contenido del pdf exitosamente')
       }
       catch (e) {
         feedbackStore.setError(e)
@@ -56,7 +56,7 @@ export const useTemplateStore = defineStore('templateStore', {
       feedbackStore.setLoading()
       try {
         await $templateService.fetchMyTemplates()
-         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+        feedbackStore.setSuccess('Se guardó el contenido del pdf exitosamente')
       }
       catch (e) {
         feedbackStore.setError(e)
@@ -68,7 +68,7 @@ export const useTemplateStore = defineStore('templateStore', {
       feedbackStore.setLoading()
       try {
         await $templateService.deleteTemplate(this.currentTemplate.id)
-         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+        feedbackStore.setSuccess('Se guardó el contenido del pdf exitosamente')
       }
       catch (e) {
         feedbackStore.setError(e)

@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <basic-container>
     <template #breadcrumbs>
       <Breadcrumb />
@@ -15,6 +15,6 @@ onMounted(() => {
 })
 </script>
 
-<style lang="">
+<style>
 
 </style>

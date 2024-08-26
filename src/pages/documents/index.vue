@@ -126,7 +126,7 @@ defineProps({
 })
 const templateStore = useTemplateStore()
 const documentStore = useDocumentStore()
-const { documents, currentDocument } = storeToRefs(documentStore)
+const { documents } = storeToRefs(documentStore)
 const quillDescr = ref(null)
 
 const quillContent = ref('')

@@ -37,7 +37,7 @@ const handleSuccess = async () => {
     path: `/templates`,
   })
 }
-const showModal = computed(() =>  feedbackStore.isSuccess())
+const showModal = computed(() => feedbackStore.isSuccess())
 
 onMounted(() => {
   templateStore.resetCurrentTemplate()

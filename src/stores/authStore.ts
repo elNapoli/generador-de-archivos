@@ -13,8 +13,8 @@ export const useAuthStore = defineStore('authStore', {
       const feedbackStore = useFeedbackStore()
       feedbackStore.setLoading()
       try {
-         await $authService.signInWithPassword(this.email, this.password)
-         feedbackStore.setSuccess("Credenciales correctas")
+        await $authService.signInWithPassword(this.email, this.password)
+        feedbackStore.setSuccess('Credenciales correctas')
       }
       catch (e) {
         feedbackStore.setError(e)

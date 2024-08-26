@@ -72,7 +72,6 @@
         md="6"
       >
         <v-btn
-          ref="btn"
           prepend-icon="mdi-variable"
           width="204"
         >
@@ -138,12 +137,6 @@
   </v-container>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      btn: null,
-    }
-  },
-}
+<script setup>
+
 </script>
