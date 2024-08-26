@@ -44,7 +44,6 @@ const insertText = (newText) => {
 }
 const savePdfTemplate = async () => {
   await templateStore.savePdfContent()
-  templateStore.resetapiResponse()
   await navigateTo({
     path: `/templates`,
   })

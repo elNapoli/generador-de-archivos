@@ -1,18 +1,10 @@
 import { defineStore } from 'pinia'
 import type { DocumentAttribute } from '../types/DocumentAttribute'
-import type { apiResponse } from '../utils/handleAsyncOperation'
-import { handleAsyncOperation } from '../utils/handleAsyncOperation'
 import { useNuxtApp } from '#app'
 
 export const useTemplateStore = defineStore('templateStore', {
   state: () => ({
     templates: [],
-    loading: false,
-    apiResponse: {
-      success: false,
-      data: false,
-      message: '',
-    } as unknown as apiResponse<boolean> | null,
     currentTemplate: {
       name: null,
       id: null,
@@ -21,49 +13,66 @@ export const useTemplateStore = defineStore('templateStore', {
     currentAttribute: {},
   }),
   actions: {
-    async saveOrUpdateTemplate() {
+
+    async createTemplate() {
       const { $templateService } = useNuxtApp()
-      this.apiResponse = await handleAsyncOperation(
-        () => $templateService.saveOrUpdateTemplate(this.currentTemplate),
-        loading => this.loading = loading,
-        error => this.apiResponse = { success: false, data: false, message: error },
-        message => this.apiResponse = { success: true, data: true, message: message },
-      )
-      return this.apiResponse
+      const feedbackStore = useFeedbackStore()
+      feedbackStore.setLoading()
+      try {
+         await $templateService.saveOrUpdateTemplate(this.currentTemplate)
+         feedbackStore.setSuccess("Se guardó el template exitosamente")
+      }
+      catch (e) {
+        feedbackStore.setError(e)
+      }
     },
     async savePdfContent() {
       const { $templateService } = useNuxtApp()
-      this.apiResponse = await handleAsyncOperation(
-        () => $templateService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content),
-        loading => this.loading = loading,
-        error => this.apiResponse = { success: false, data: false, message: error },
-        message => this.apiResponse = { success: true, data: true, message: message },
-      )
-      return this.apiResponse
+      const feedbackStore = useFeedbackStore()
+      feedbackStore.setLoading()
+      try {
+         await $templateService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
+         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+      }
+      catch (e) {
+        feedbackStore.setError(e)
+      }
+    },
+    async createOrUpdateTemplate() {
+      const { $templateService } = useNuxtApp()
+      const feedbackStore = useFeedbackStore()
+      feedbackStore.setLoading()
+      try {
+         await $templateService.saveOrUpdateTemplate(this.currentTemplate)
+         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+      }
+      catch (e) {
+        feedbackStore.setError(e)
+      }
     },
     async fetchMyTemplates() {
       const { $templateService } = useNuxtApp()
-      return await handleAsyncOperation(
-        async () => {
-          const data = await $templateService.fetchMyTemplates()
-          this.templates = data.data
-          return data
-        },
-        loading => this.loading = loading,
-        (_) => {},
-        (_) => {},
-      )
+      const feedbackStore = useFeedbackStore()
+      feedbackStore.setLoading()
+      try {
+        await $templateService.fetchMyTemplates()
+         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+      }
+      catch (e) {
+        feedbackStore.setError(e)
+      }
     },
     async deleteTemplate() {
       const { $templateService } = useNuxtApp()
-      return await handleAsyncOperation(
-        () => $templateService.deleteTemplate(this.currentTemplate.id),
-        loading => this.loading = loading,
-        (_) => {},
-        (_) => {
-          this.templates = this.templates.filter(t => t.id !== this.currentTemplate.id)
-        },
-      )
+      const feedbackStore = useFeedbackStore()
+      feedbackStore.setLoading()
+      try {
+        await $templateService.deleteTemplate(this.currentTemplate.id)
+         feedbackStore.setSuccess("Se guardó el contenido del pdf exitosamente")
+      }
+      catch (e) {
+        feedbackStore.setError(e)
+      }
     },
     createOrEditAttribute(attribute: DocumentAttribute) {
       const index = this.currentTemplate.document_attributes.findIndex(attr => attr.name === attribute.name)
@@ -102,13 +111,6 @@ export const useTemplateStore = defineStore('templateStore', {
         id: null,
         document_attributes: [],
       }
-    },
-    resetapiResponse() {
-      this.apiResponse = {
-        success: false,
-        data: false,
-        message: '',
-      } as unknown as apiResponse<boolean>
     },
   },
 })

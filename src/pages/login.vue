@@ -46,7 +46,7 @@
 
                 <v-btn
                   :disabled="!form || loading"
-                  :loading="loading"
+                  :loading="feedbackStore.isLoading()"
                   size="large"
                   type="submit"
                   block
@@ -66,36 +66,41 @@
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/authStore' // Asegúrate de que la ruta sea correcta
-
+import { FeedbackState } from '~/stores/feedbackStore'
 definePageMeta({
   layout: 'public',
 })
 
 const authStore = useAuthStore()
 const form = ref(false)
-const { email, password, error } = storeToRefs(authStore)
+const { email, password } = storeToRefs(authStore)
 const loading = ref(false)
+const feedbackStore = useFeedbackStore()
 
 const onSubmit = async () => {
   if (!form.value) return
 
-  loading.value = true
-
-  try {
-    await authStore.signInWithPassword()
-    await navigateTo('/')
-  }
-  catch (err) {
-    console.error('Error al iniciar sesión:', err)
-  }
-  finally {
-    loading.value = false
-  }
+  await authStore.signInWithPassword()
 }
 
 const required = (v) => {
   return !!v || 'Campo requerido'
 }
+
+watch(
+  () => feedbackStore.status,
+  async (newStatus:FeedbackState) => {
+    if(newStatus === FeedbackState.SUCCESS){
+      console.log(newStatus)
+      await navigateTo('/')
+    }
+  }
+)
+
+onUnmounted(() => {
+  feedbackStore.resetState()
+})
+
 </script>
 
 <style scoped>

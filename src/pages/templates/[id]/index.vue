@@ -6,7 +6,7 @@
     <templates-form />
     <div class="text-center pa-4">
       <v-dialog
-        v-model="apiResponse.success"
+        v-model="showModal"
         max-width="400"
         persistent
       >
@@ -29,11 +29,10 @@
 </template>
 
 <script setup>
-const templateStore = useTemplateStore()
-const { apiResponse } = storeToRefs(templateStore)
+const feedbackStore = useFeedbackStore()
+const showModal = computed(() =>  feedbackStore.isSuccess())
 
 const handleSuccess = async () => {
-  templateStore.resetapiResponse()
   await navigateTo({
     path: `/templates`,
   })

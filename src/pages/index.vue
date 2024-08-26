@@ -7,10 +7,9 @@
   </basic-container>
 </template>
 
-<script>
-export default {
+<script setup >
+const feedbackStore = useFeedbackStore()
 
-}
 </script>
 
 <style lang="">
