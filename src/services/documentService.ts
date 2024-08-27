@@ -8,21 +8,10 @@ class DocumentService {
   }
 
   async fetchMyDocuments() {
-    try {
-      // Crear nueva plantilla
-      const { data, error } = await this.supabase
-        .from('user_documents')
-        .select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)')
-      if (error) {
-        throw error
-      }
-      console.log(data)
-      return data
-    }
-    catch (error) {
-      console.error('Error al iniciar sesión:', error.message)
-      throw new Error('Error al iniciar sesión')
-    }
+    const response = await this.supabase
+      .from('user_documents')
+      .select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)')
+    return response
   }
 
   async deleteDocument(documentId) {

@@ -12,7 +12,7 @@
       >
         <v-card
           prepend-icon="mdi-map-marker"
-          text="Template creado con éxito"
+          text="Template actualizado con éxito"
           title="Operación exitosa"
         >
           <template #actions>
@@ -29,14 +29,18 @@
 </template>
 
 <script setup>
-const feedbackStore = useFeedbackStore()
-const showModal = computed(() => feedbackStore.isSuccess())
+const templateStore = useTemplateStore()
+const { currentTemplate } = storeToRefs(templateStore)
+const showModal = computed(() => currentTemplate.value.status === 200)
 
 const handleSuccess = async () => {
   await navigateTo({
     path: `/templates`,
   })
 }
+onUnmounted(() => {
+  templateStore.resetCurrentTemplate()
+})
 </script>
 
 <style scoped>

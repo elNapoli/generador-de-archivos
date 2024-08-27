@@ -7,7 +7,12 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify'],
   },
-
+  components: {
+    dirs: ['components', 'models'],
+  },
+  imports: {
+    dirs: ['models'],
+  },
   runtimeConfig: {
     public: {},
     apiSecret: 'ejemplossss',

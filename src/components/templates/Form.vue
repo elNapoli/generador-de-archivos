@@ -1,19 +1,19 @@
 <template>
   <form @submit.prevent="templateStore.createOrUpdateTemplate()">
     <v-text-field
-      v-model="currentTemplate.name"
+      v-model="currentTemplate.data.name"
       :counter="50"
       label="Nombre"
     />
     <v-textarea
-      v-model="currentTemplate.description"
+      v-model="currentTemplate.data.description"
       :counter="500"
       label="Descripción"
     />
     <templates-item-attribute-table
       class="my-4"
-      :template-id="currentTemplate.id"
-      :data="currentTemplate.document_attributes"
+      :template-id="currentTemplate.data.id"
+      :data="currentTemplate.data.document_attributes"
     />
     <v-btn
       :loading="loading"
@@ -21,7 +21,7 @@
       type="submit"
       block
     >
-      {{ currentTemplate.id ? 'Actualizar template' : 'Crear template' }}
+      {{ currentTemplate.data.id ? 'Actualizar template' : 'Crear template' }}
     </v-btn>
   </form>
 </template>

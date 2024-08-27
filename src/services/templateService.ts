@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { Template } from '../types/Template'
+import type BaseDto from '~/models/dto/BaseDto'
+import type { TemplateDto } from '~/models/dto/TemplateDto'
 
 class TemplateService {
   private supabase: SupabaseClient
@@ -14,47 +15,40 @@ class TemplateService {
   }
 
   async savePdfContent(tempalteId: number, jsonObject: JSON) {
-    return safeExecute(() =>
-      this.supabase
-        .from('document_templates')
-        .update({
-          content: jsonObject,
-        })
-        .eq('id', tempalteId),
-    )
+    return this.supabase
+      .from('document_templates')
+      .update({
+        content: jsonObject,
+      })
+      .eq('id', tempalteId)
   }
 
-  // Obtener todas las plantillas del usuario
   async fetchMyTemplates() {
-    return safeExecute(() =>
-      this.supabase
-        .from('document_templates')
-        .select(`
+    const response: BaseDto<TemplateDto[]> = await this.supabase
+      .from('document_templates')
+      .select(`
           id,
           name,
           description,
           document_attributes(id, name, type, required, code_name),
           content
-        `),
-    )
+        `)
+    const data: BaseDto<TemplateDto[]> = {
+      ...response,
+      data: response.data ?? [],
+    }
+    return data
   }
 
   // Eliminar una plantilla por ID
   async deleteTemplate(id: number) {
-    const { error } = await safeExecute(() =>
-      this.supabase
-        .from('document_templates')
-        .delete()
-        .eq('id', id),
-    )
-
-    if (error) {
-      console.error(`Error al eliminar la plantilla con id ${id}:`, error)
-    }
+    return this.supabase
+      .from('document_templates')
+      .delete()
+      .eq('id', id)
   }
 
-  // Guardar o actualizar una plantilla
-  async saveOrUpdateTemplate(template: Template) {
+  async createTemplate(template: Template) {
     const document_id = await this.saveOrUpdateTemplateRecord(template)
     if (!document_id) return
 
@@ -62,7 +56,7 @@ class TemplateService {
     if (!currentAttributes) return
 
     await this.deleteRemovedAttributes(currentAttributes, template)
-    await this.upsertAttributes(document_id, template.document_attributes)
+    return await this.upsertAttributes(document_id, template.document_attributes)
   }
 
   // Guardar o actualizar el registro de la plantilla
@@ -144,7 +138,7 @@ class TemplateService {
   // Insertar o actualizar los atributos restantes
   private async upsertAttributes(templateId: number, attributes: DocumentAttribute[]) {
     for (const attribute of attributes) {
-      const { error } = await this.supabase
+      const response = await this.supabase
         .from('document_attributes')
         .upsert({
           template_id: templateId,
@@ -152,7 +146,8 @@ class TemplateService {
           ...attribute,
         }, { onConflict: ['template_id', 'code_name'] })
 
-      if (error) {
+      return response
+      if (reponse.error) {
         console.error('Error al insertar o actualizar un atributo:', error)
         return
       }

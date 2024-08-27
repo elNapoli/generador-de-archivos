@@ -30,7 +30,7 @@
           @click="dialog=true"
         />
         <templates-new-item-dialog
-          :item="currentAttribute"
+          :item="currentAttribute.data"
           :title="formTitle"
           :open="dialog"
           @dialog:close="dialog=false"
@@ -120,7 +120,7 @@ const headers = [
   { title: 'Actions', key: 'actions', sortable: false },
 ]
 
-const formTitle = computed(() => (currentAttribute.value.name === null ? 'Agregar atributo' : 'Editar atributo'))
+const formTitle = computed(() => (currentAttribute.data?.value.name === null ? 'Agregar atributo' : 'Editar atributo'))
 
 const editItem = (item) => {
   templateStore.setCurrentAttribute(item)

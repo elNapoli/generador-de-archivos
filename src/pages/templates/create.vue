@@ -30,15 +30,13 @@
 
 <script setup>
 const templateStore = useTemplateStore()
-const feedbackStore = useFeedbackStore()
-
+const { currentTemplate } = storeToRefs(templateStore)
+const showModal = computed(() => currentTemplate.value.status === 201)
 const handleSuccess = async () => {
   await navigateTo({
     path: `/templates`,
   })
 }
-const showModal = computed(() => feedbackStore.isSuccess())
-
 onMounted(() => {
   templateStore.resetCurrentTemplate()
 })
