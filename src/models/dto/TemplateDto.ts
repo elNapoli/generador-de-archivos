@@ -8,8 +8,8 @@ export interface TemplateDto {
   content?: object
 }
 
-export class TemplateInitializer {
-  static initState(): TemplateDto {
+export const TemplateInitializer = {
+  initState(): TemplateDto {
     return {
       status: 0,
       data: {
@@ -21,5 +21,5 @@ export class TemplateInitializer {
       error: null,
       loading: false,
     }
-  }
+  },
 }

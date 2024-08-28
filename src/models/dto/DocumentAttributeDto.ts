@@ -6,8 +6,8 @@ export interface DocumentAttributeDto {
   type: string
 }
 
-export class DocumentAttributeInitializer {
-  static initState(): DocumentAttributeDto {
+export const DocumentAttributeInitializer = {
+  initState(): DocumentAttributeDto {
     return {
       status: 0,
       data: {
@@ -18,5 +18,5 @@ export class DocumentAttributeInitializer {
       error: null,
       loading: false,
     }
-  }
+  },
 }
