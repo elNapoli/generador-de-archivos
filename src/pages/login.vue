@@ -41,6 +41,7 @@
                 <v-text-field
                   v-model="form.password"
                   :rules="[required]"
+                  type="password"
                   label="Contraseña"
                   placeholder="Ingresa tu contraseña"
                   clearable
