@@ -1,21 +1,21 @@
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
-import { type DocumentAttributeDto, DocumentAttributeInitializer } from '~/models/dto/DocumentAttributeDto'
+import { type TemplateAttributeDto, TemplateAttributeInitializer } from '~/models/dto/TemplateAttributeDto'
 
 const initialState = () => ({
-  currentAttribute: DocumentAttributeInitializer.initState(),
+  currentAttribute: TemplateAttributeInitializer.initState(),
 })
 
 export const useAttributeTemplateStore = defineStore('attributeTemplateStore', {
   state: initialState,
   getters: {},
   actions: {
-    async assignAttributesToTemplate(templateId, attributes: DocumentAttributeDto[]) {
+    async assignAttributesToTemplate(templateId, attributes: TemplateAttributeDto[]) {
       const { $templateService } = useNuxtApp()
       return await $templateService.assignAttributesToTemplate(templateId, attributes)
     },
 
-    setCurrentAttribute(attribute: DocumentAttributeDto) {
+    setCurrentAttribute(attribute: TemplateAttributeDto) {
       this.currentAttribute.data = attribute
     },
 
@@ -23,7 +23,7 @@ export const useAttributeTemplateStore = defineStore('attributeTemplateStore', {
       const { $templateService } = useNuxtApp()
       this.currentAttribute = await $templateService.updateAttribute(this.currentAttribute.data)
     },
-    async deleteAttribute(attribute: DocumentAttributeDto) {
+    async deleteAttribute(attribute: TemplateAttributeDto) {
       const { $templateService } = useNuxtApp()
       if (attribute.id) {
         await $templateService.removeAttributesFromTemplate(attribute.id)
@@ -32,7 +32,7 @@ export const useAttributeTemplateStore = defineStore('attributeTemplateStore', {
       return attribute.name
     },
     resetCurrentAttribute() {
-      this.currentAttribute = DocumentAttributeInitializer.initState()
+      this.currentAttribute = TemplateAttributeInitializer.initState()
     },
 
   },

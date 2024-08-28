@@ -1,4 +1,4 @@
-export interface DocumentAttributeDto {
+export interface TemplateAttributeDto {
   id: number
   name: string
   code_name: string
@@ -6,8 +6,8 @@ export interface DocumentAttributeDto {
   type: string
 }
 
-export const DocumentAttributeInitializer = {
-  initState(): DocumentAttributeDto {
+export const TemplateAttributeInitializer = {
+  initState(): TemplateAttributeDto {
     return {
       status: 0,
       data: {

@@ -1,9 +1,9 @@
-import type { DocumentAttributeDto } from '~/models/dto/DocumentAttributeDto'
+import type { TemplateAttributeDto } from '~/models/dto/TemplateAttributeDto'
 
 export interface TemplateDto {
   id?: number
   name?: string
-  document_attributes: DocumentAttributeDto[]
+  document_attributes: TemplateAttributeDto[]
   description: string
   content?: object
 }

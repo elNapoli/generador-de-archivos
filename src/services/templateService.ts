@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { type TemplateDto, TemplateInitializer } from '~/models/dto/TemplateDto'
 import type BaseDto from '~/models/dto/BaseDto'
-import { type DocumentAttributeDto, DocumentAttributeInitializer } from '~/models/dto/DocumentAttributeDto'
+import { type TemplateAttributeDto, TemplateAttributeInitializer } from '~/models/dto/TemplateAttributeDto'
 
 class TemplateService {
   private supabase: SupabaseClient
@@ -51,10 +51,10 @@ class TemplateService {
       .from('document_attributes')
       .delete()
       .eq('id', id)
-    return safeApi(query, DocumentAttributeInitializer.initState())
+    return safeApi(query, TemplateAttributeInitializer.initState())
   }
 
-  async updateAttribute(attribute: DocumentAttributeDto) {
+  async updateAttribute(attribute: TemplateAttributeDto) {
     const query = this.supabase
       .from('document_attributes')
       .update({
@@ -64,7 +64,7 @@ class TemplateService {
       })
       .eq('id', attribute.id)
 
-    return safeApi(query, DocumentAttributeInitializer.initState().data)
+    return safeApi(query, TemplateAttributeInitializer.initState().data)
   }
 
   async updateTemplate(template: TemplateDto) {
@@ -92,7 +92,7 @@ class TemplateService {
     return safeApi(query, TemplateInitializer.initState())
   }
 
-  async assignAttributesToTemplate(templateId, attributes): Promise<BaseDto<DocumentAttributeDto>> {
+  async assignAttributesToTemplate(templateId, attributes): Promise<BaseDto<TemplateAttributeDto>> {
     let result = null
     for (const attribute of attributes) {
       const query = this.supabase

@@ -4,7 +4,7 @@ import type BaseDto from '~/models/dto/BaseDto'
 import { type TemplateDto, TemplateInitializer } from '~/models/dto/TemplateDto'
 import { safeBaseDto } from '~/utils/safeBaseDto'
 import { useAttributeTemplateStore } from '~/stores/attributeTemplateStore'
-import type { DocumentAttributeDto } from '~/models/dto/DocumentAttributeDto'
+import type { TemplateAttributeDto } from '~/models/dto/TemplateAttributeDto'
 
 const initialState = () => ({
   templates: [] as BaseDto<TemplateDto>,
@@ -27,7 +27,7 @@ export const useTemplateStore = defineStore('templateStore', {
       attributeTemplateStore.resetCurrentAttribute()
     },
 
-    async detachAttributesFromTemplate(attribute: DocumentAttributeDto) {
+    async detachAttributesFromTemplate(attribute: TemplateAttributeDto) {
       const attributeTemplateStore = useAttributeTemplateStore()
       await attributeTemplateStore.deleteAttribute(attribute)
       this.currentTemplate.data.document_attributes = this.currentTemplate.data.document_attributes.filter(attr => attr.name !== attribute.name)
