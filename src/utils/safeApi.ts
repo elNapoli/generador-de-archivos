@@ -1,3 +1,6 @@
+import type BaseDto from '~/models/dto/BaseDto'
+import { BaseInitializer } from '~/models/dto/BaseDto'
+
 export async function safeApi<T>(
   apiCall: Promise<T>,
   initialData?: T,
@@ -6,7 +9,7 @@ export async function safeApi<T>(
     const data = await apiCall
     return {
       ...data,
-      data: data.data !== null ? data.data : initialData,
+      data: data.data !== null ? BaseInitializer.initState(data.data).data : BaseInitializer.initState(initialData).data,
       loading: false,
     }
   }
@@ -21,6 +24,6 @@ export async function safeApi<T>(
         message: error instanceof Error ? error.message : 'Unknown error',
       },
       loading: false,
-    }
+    } as BaseDto<T>
   }
 }

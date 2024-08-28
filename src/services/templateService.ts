@@ -64,7 +64,7 @@ class TemplateService {
       })
       .eq('id', attribute.id)
 
-    return safeApi(query, TemplateAttributeInitializer.initState().data)
+    return safeApi(query, TemplateAttributeInitializer.initState())
   }
 
   async updateTemplate(template: TemplateDto) {

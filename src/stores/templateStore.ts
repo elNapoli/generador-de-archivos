@@ -1,14 +1,13 @@
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
-import type BaseDto from '~/models/dto/BaseDto'
-import { type TemplateDto, TemplateInitializer } from '~/models/dto/TemplateDto'
-import { safeBaseDto } from '~/utils/safeBaseDto'
+import { BaseInitializer } from '~/models/dto/BaseDto'
+import { TemplateInitializer } from '~/models/dto/TemplateDto'
 import { useAttributeTemplateStore } from '~/stores/attributeTemplateStore'
 import type { TemplateAttributeDto } from '~/models/dto/TemplateAttributeDto'
 
 const initialState = () => ({
-  templates: [] as BaseDto<TemplateDto>,
-  currentTemplate: TemplateInitializer.initState(),
+  templates: BaseInitializer.initState([]),
+  currentTemplate: BaseInitializer.initState(TemplateInitializer.initState()),
 })
 
 export const useTemplateStore = defineStore('templateStore', {
@@ -49,8 +48,7 @@ export const useTemplateStore = defineStore('templateStore', {
     },
     async fetchMyTemplates() {
       const { $templateService } = useNuxtApp()
-      const response = await $templateService.fetchMyTemplates()
-      this.templates = safeBaseDto(response, [])
+      this.templates = await $templateService.fetchMyTemplates()
     },
     async deleteTemplate() {
       const { $templateService } = useNuxtApp()
@@ -59,13 +57,13 @@ export const useTemplateStore = defineStore('templateStore', {
     },
 
     setCurrentTemplate(template: object) {
-      this.currentTemplate.data = template
+      this.currentTemplate = BaseInitializer.initState(template)
     },
     setCurrentTemplateById(templateId: number) {
-      this.currentTemplate.data = this.templates.find(t => t.id === templateId)
+      this.currentTemplate = BaseInitializer.initState(this.templates.data.find(t => t.id === templateId))
     },
     resetCurrentTemplate() {
-      this.currentTemplate = TemplateInitializer.initState()
+      this.currentTemplate = BaseInitializer.initState(TemplateInitializer.initState())
     },
   },
 })

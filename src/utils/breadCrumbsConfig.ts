@@ -11,7 +11,7 @@ const template = {
   to: '/templates',
 }
 const documents = {
-  title: 'Documentos',
+  title: 'Formularios',
   disabled: false,
   to: '/documents',
 }
@@ -24,6 +24,7 @@ function generateTemplateBreadcrumb(id, disabled: boolean) {
     to: `/templates/${id}`,
   }
 }
+
 function generateDocumentBreadcrumb(id, disabled: boolean) {
   return {
     title: `${id}`,
@@ -56,7 +57,7 @@ export const breadcrumbsConfig = {
     disabled: true,
   }],
   '/documents': [home, {
-    title: 'Documentos',
+    title: 'Formularios',
     disabled: true,
   }],
   '/documents/:id': params => [home, documents, generateDocumentBreadcrumb(params.id, true)],

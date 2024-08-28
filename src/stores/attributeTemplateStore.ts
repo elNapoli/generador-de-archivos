@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
 import { type TemplateAttributeDto, TemplateAttributeInitializer } from '~/models/dto/TemplateAttributeDto'
+import { BaseInitializer } from '~/models/dto/BaseDto'
 
 const initialState = () => ({
-  currentAttribute: TemplateAttributeInitializer.initState(),
+  currentAttribute: BaseInitializer.initState(TemplateAttributeInitializer.initState()),
 })
 
 export const useAttributeTemplateStore = defineStore('attributeTemplateStore', {
@@ -16,7 +17,7 @@ export const useAttributeTemplateStore = defineStore('attributeTemplateStore', {
     },
 
     setCurrentAttribute(attribute: TemplateAttributeDto) {
-      this.currentAttribute.data = attribute
+      this.currentAttribute = BaseInitializer.initState(attribute)
     },
 
     async updateAttribute() {
@@ -32,7 +33,7 @@ export const useAttributeTemplateStore = defineStore('attributeTemplateStore', {
       return attribute.name
     },
     resetCurrentAttribute() {
-      this.currentAttribute = TemplateAttributeInitializer.initState()
+      this.currentAttribute = BaseInitializer.initState(TemplateAttributeInitializer.initState())
     },
 
   },

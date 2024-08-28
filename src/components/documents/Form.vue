@@ -1,24 +1,27 @@
 <template>
   <form @submit.prevent="handleSubmit">
     <v-text-field
-      v-model="currentDocument.name"
-      :disabled="editMode"
+      v-model="currentDocument.data.name"
+      :disabled="documentStore.editMode"
       :counter="50"
       label="Nombre del documento"
       placeholder="Ej: Contrato de arriendo entre ANA (17536925) y PEDRO (17536925)"
     />
     <v-select
-      v-model="currentTemplate"
+      v-model="currentTemplate.data"
+      :model-value="currentTemplate.data"
       label="Plantilla"
-      :items="templates"
+      :items="templates.data"
       return-object
       item-title="name"
       item-value="id"
+      @update:model-value="documentStore.resetAttributesValue()"
     />
     <v-text-field
-      v-for="i in currentTemplate.document_attributes"
+      v-for="i in currentTemplate.data.document_attributes"
       :key="i.id"
-      v-model="currentDocument.attributes[i.code_name]"
+
+      v-model="currentDocument.data.attributes[i.code_name]"
       :label="i.name"
     />
     <v-btn
@@ -27,7 +30,7 @@
       type="submit"
       block
     >
-      {{ editMode ? 'Actualizar documento' : 'Crear documetno' }}
+      {{ documentStore.editMode ? 'Actualizar formularios' : 'Crear formularios' }}
     </v-btn>
   </form>
 </template>
@@ -38,12 +41,16 @@ const documentStore = useDocumentStore()
 const { currentDocument } = storeToRefs(documentStore)
 const { templates, currentTemplate } = storeToRefs(templateStore)
 const handleSubmit = async () => {
-  await documentStore.saveOrUpdateDocument(currentTemplate.value.id)
+  if (documentStore.editMode) {
+    await documentStore.updateDocument(currentTemplate.value.data.id)
+  }
+  else {
+    await documentStore.createDocument(currentTemplate.value.data.id)
+  }
   await navigateTo({
     path: `/documents`,
   })
 }
-const editMode = computed(() => currentDocument.value?.id != null)
 </script>
 
 <style>

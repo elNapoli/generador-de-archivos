@@ -30,7 +30,7 @@
       type="submit"
       block
     >
-      {{ templateStore.editMode ? 'Actualizar template' : 'Crear template' }}
+      {{ templateStore.editMode ? 'Actualizar plantilla' : 'Crear plantilla' }}
     </v-btn>
   </form>
 </template>

@@ -9,14 +9,9 @@ export interface TemplateAttributeDto {
 export const TemplateAttributeInitializer = {
   initState(): TemplateAttributeDto {
     return {
-      status: 0,
-      data: {
-        name: null,
-        required: false,
-        type: 'String',
-      },
-      error: null,
-      loading: false,
+      name: null,
+      required: false,
+      type: 'String',
     }
   },
 }

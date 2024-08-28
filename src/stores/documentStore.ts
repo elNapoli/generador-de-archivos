@@ -1,61 +1,51 @@
 // stores/authStore.ts
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
+import { BaseInitializer } from '~/models/dto/BaseDto'
+import { DocumentInitializer } from '~/models/dto/DocumentDto'
+
+const initialState = () => ({
+  documents: BaseInitializer.initState([]),
+  currentDocument: BaseInitializer.initState(DocumentInitializer.initState()),
+})
 
 export const useDocumentStore = defineStore('documentStore', {
-  state: () => ({
-    currentDocument: {
-      attributes: {},
-    },
-    documents: [],
-
-  }),
+  state: initialState,
+  getters: {
+    editMode: state => state.currentDocument.data.id != null,
+  },
   actions: {
     setCurrentDocument(item) {
-      console.log('item')
-      console.log(item)
-      this.currentDocument = item
+      this.currentDocument = BaseInitializer.initState(item)
     },
-    async saveOrUpdateDocument(templateId) {
+    resetAttributesValue() {
+      this.currentDocument.data.attributes = BaseInitializer.initState({})
+    },
+    async createDocument(templateId) {
       const { $documentService } = useNuxtApp()
-      const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
-
-      try {
-        return await $documentService.saveOrUpdateDocument(this.currentDocument.name, templateId, attributesValueJson)
-      }
-      catch (e) {
-        console.log(e)
-        return null
-      }
+      const attributesValueJson = JSON.stringify(this.currentDocument.data.attributes)
+      this.currentDocument = await $documentService.createDocument(this.currentDocument.data.name, templateId, attributesValueJson)
+    },
+    async updateDocument(templateId) {
+      const { $documentService } = useNuxtApp()
+      const attributesValueJson = JSON.stringify(this.currentDocument.data.attributes)
+      this.currentDocument = await $documentService.updateDocument(this.currentDocument.data.id, templateId, attributesValueJson)
     },
     async fetchMyDocuments() {
       const { $documentService } = useNuxtApp()
-
-      try {
-        const documents = await $documentService.fetchMyDocuments()
-        this.documents = documents.map((doc) => {
-          return {
-            ...doc,
-            attributes: JSON.parse(doc.attributes),
-          }
-        })
-      }
-      catch (e) {
-        console.log(e)
-        return null
+      const response = await $documentService.fetchMyDocuments()
+      this.documents = {
+        ...response,
+        data: response.data.map(item => ({
+          ...item,
+          attributes: JSON.parse(item.attributes),
+        })),
       }
     },
     async deleteDocument() {
       const { $documentService } = useNuxtApp()
-
-      try {
-        await $documentService.deleteDocument(this.currentDocument.id)
-        this.documents = this.documents.filter(t => t.id !== this.currentDocument.id)
-      }
-      catch (e) {
-        console.log(e)
-        return null
-      }
+      this.currentDocument = await $documentService.deleteDocument(this.currentDocument.data.id)
+      await this.fetchMyDocuments()
     },
   },
 })

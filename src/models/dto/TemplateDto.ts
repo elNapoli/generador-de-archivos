@@ -11,15 +11,10 @@ export interface TemplateDto {
 export const TemplateInitializer = {
   initState(): TemplateDto {
     return {
-      status: 0,
-      data: {
-        id: null,
-        name: null,
-        description: null,
-        document_attributes: [],
-      },
-      error: null,
-      loading: false,
+      id: null,
+      name: null,
+      description: null,
+      document_attributes: [],
     }
   },
 }
