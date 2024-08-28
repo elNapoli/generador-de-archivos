@@ -5,7 +5,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "local": "nuxt dev --dotenv .env.local",
+    "dev": "nuxt dev --dotenv .env.development",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

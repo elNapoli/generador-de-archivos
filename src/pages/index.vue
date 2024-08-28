@@ -3,11 +3,12 @@
     <template #breadcrumbs>
       <Breadcrumb />
     </template>
-    baldomero
+    {{ supabaseUser.email }}
   </basic-container>
 </template>
 
 <script setup>
+const supabaseUser = useSupabaseUser()
 </script>
 
 <style>
