@@ -3,10 +3,26 @@
     <template #breadcrumbs>
       <Breadcrumb />
     </template>
+    <v-alert
+      v-if="templates.error"
+      color="error"
+      icon="mdi:alert-circle"
+      :value="true"
+    >
+      {{ templates.error?.message }}
+    </v-alert>
+    <v-alert
+      v-if="currentTemplate.error"
+      color="error"
+      icon="mdi:alert-circle"
+      :value="true"
+    >
+      {{ currentTemplate.error?.message }}
+    </v-alert>
     <v-data-table
       :headers="headers"
       :hide-default-footer="true"
-      :items="templates"
+      :items="templates.data"
       :sort-by="[{ key: 'name', order: 'asc' }]"
     >
       <template #top>
@@ -104,8 +120,10 @@ defineProps({
     required: true,
   },
 })
+
 const templateStore = useTemplateStore()
-const { templates } = storeToRefs(templateStore)
+const { templates, currentTemplate } = storeToRefs(templateStore)
+
 const headers = [
   {
     title: 'Nombre',

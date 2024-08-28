@@ -1,19 +1,28 @@
-<template lang="">
-  <form @submit.prevent=" templateStore.saveOrUpdateTemplate()">
+<template>
+  <form @submit.prevent="submit">
+    <v-alert
+      v-if="currentTemplate.error"
+      class="my-4"
+      color="error"
+      icon="mdi:alert-circle"
+    >
+      {{ currentTemplate.error?.message }}
+    </v-alert>
     <v-text-field
-      v-model="currentTemplate.name"
+      v-model="currentTemplate.data.name"
       :counter="50"
       label="Nombre"
     />
     <v-textarea
-      v-model="currentTemplate.description"
+      v-model="currentTemplate.data.description"
       :counter="500"
       label="Descripción"
     />
     <templates-item-attribute-table
       class="my-4"
-      :template-id="currentTemplate.id"
-      :data="currentTemplate.document_attributes"
+      :enable-edit="templateStore.editMode"
+      :template-id="currentTemplate.data.id"
+      :data="currentTemplate.data.document_attributes"
     />
     <v-btn
       :loading="loading"
@@ -21,16 +30,25 @@
       type="submit"
       block
     >
-      {{ currentTemplate.id ? 'Actualizar template' : 'Crear template' }}
+      {{ templateStore.editMode ? 'Actualizar plantilla' : 'Crear plantilla' }}
     </v-btn>
   </form>
 </template>
 
 <script setup>
 const templateStore = useTemplateStore()
-const { currentTemplate, loading } = storeToRefs(templateStore)
+const { currentTemplate } = storeToRefs(templateStore)
+
+const submit = () => {
+  if (templateStore.editMode) {
+    templateStore.updateTemplate()
+  }
+  else {
+    templateStore.createTemplate()
+  }
+}
 </script>
 
-<style lang="">
+<style>
 
 </style>

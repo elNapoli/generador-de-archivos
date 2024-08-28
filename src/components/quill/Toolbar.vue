@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <div id="my">
     <div class="ql-formats">
       <button class="ql-bold" />
@@ -204,7 +204,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   customButtoms: {
     type: Array,
     required: true,
@@ -216,6 +216,6 @@ const sendCodeName = (codeName) => {
 }
 </script>
 
-<style lang="">
+<style>
 
 </style>

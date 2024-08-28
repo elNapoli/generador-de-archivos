@@ -6,13 +6,13 @@
     <templates-form />
     <div class="text-center pa-4">
       <v-dialog
-        v-model="apiResponse.success"
+        v-model="showModal"
         max-width="400"
         persistent
       >
         <v-card
           prepend-icon="mdi-map-marker"
-          text="Template creado con éxito"
+          text="Template actualizado con éxito"
           title="Operación exitosa"
         >
           <template #actions>
@@ -30,14 +30,17 @@
 
 <script setup>
 const templateStore = useTemplateStore()
-const { apiResponse } = storeToRefs(templateStore)
+const { currentTemplate } = storeToRefs(templateStore)
+const showModal = computed(() => currentTemplate.value.status === 200)
 
 const handleSuccess = async () => {
-  templateStore.resetapiResponse()
   await navigateTo({
     path: `/templates`,
   })
 }
+onUnmounted(() => {
+  templateStore.resetCurrentTemplate()
+})
 </script>
 
 <style scoped>

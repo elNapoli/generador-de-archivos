@@ -1,4 +1,4 @@
-<template lang="">
+<template>
   <v-app-bar :elevation="2">
     <template #prepend>
       <v-app-bar-nav-icon @click="toggleDrawer" />
@@ -32,6 +32,6 @@ const toggleDrawer = () => {
 }
 </script>
 
-<style lang="">
+<style>
 
 </style>

@@ -1,114 +1,69 @@
 import { defineStore } from 'pinia'
-import type { DocumentAttribute } from '../types/DocumentAttribute'
-import type { apiResponse } from '../utils/handleAsyncOperation'
-import { handleAsyncOperation } from '../utils/handleAsyncOperation'
 import { useNuxtApp } from '#app'
+import { BaseInitializer } from '~/models/dto/BaseResponse'
+import { TemplateInitializer } from '~/models/dto/Template'
+import { useAttributeTemplateStore } from '~/stores/attributeTemplateStore'
+import type { TemplateAttribute } from '~/models/dto/TemplateAttribute'
+
+const initialState = () => ({
+  templates: BaseInitializer.initState([]),
+  currentTemplate: BaseInitializer.initState(TemplateInitializer.initState()),
+})
 
 export const useTemplateStore = defineStore('templateStore', {
-  state: () => ({
-    templates: [],
-    loading: false,
-    apiResponse: {
-      success: false,
-      data: false,
-      message: '',
-    } as unknown as apiResponse<boolean> | null,
-    currentTemplate: {
-      name: null,
-      id: null,
-      document_attributes: [],
-    },
-    currentAttribute: {},
-  }),
+  state: initialState,
+  getters: {
+    editMode: state => state.currentTemplate.data.id !== null,
+  },
   actions: {
-    async saveOrUpdateTemplate() {
-      const { $templateService } = useNuxtApp()
-      this.apiResponse = await handleAsyncOperation(
-        () => $templateService.saveOrUpdateTemplate(this.currentTemplate),
-        loading => this.loading = loading,
-        error => this.apiResponse = { success: false, data: false, message: error },
-        message => this.apiResponse = { success: true, data: true, message: message },
-      )
-      return this.apiResponse
-    },
     async savePdfContent() {
       const { $templateService } = useNuxtApp()
-      this.apiResponse = await handleAsyncOperation(
-        () => $templateService.savePdfContent(this.currentTemplate.id, this.currentTemplate.content),
-        loading => this.loading = loading,
-        error => this.apiResponse = { success: false, data: false, message: error },
-        message => this.apiResponse = { success: true, data: true, message: message },
-      )
-      return this.apiResponse
+      await $templateService.savePdfContent(this.currentTemplate.data.id, this.currentTemplate.data.content)
+    },
+    async attachAttributesFromTemplate(attribute: DocumentAttribute) {
+      const attributeTemplateStore = useAttributeTemplateStore()
+      await this.currentTemplate.data.document_attributes.push(attribute)
+      attributeTemplateStore.resetCurrentAttribute()
+    },
+
+    async detachAttributesFromTemplate(attribute: TemplateAttribute) {
+      const attributeTemplateStore = useAttributeTemplateStore()
+      await attributeTemplateStore.deleteAttribute(attribute)
+      this.currentTemplate.data.document_attributes = this.currentTemplate.data.document_attributes.filter(attr => attr.name !== attribute.name)
+    },
+    async createTemplate() {
+      const { $templateService } = useNuxtApp()
+      const attributeTemplateStore = useAttributeTemplateStore()
+
+      const response = await $templateService.createTemplate(this.currentTemplate.data)
+      if (response.error) {
+        this.currentTemplate = response
+        return
+      }
+      this.currentTemplate = await attributeTemplateStore.assignAttributesToTemplate(response.data.id, this.currentTemplate.data.document_attributes)
+    },
+    async updateTemplate() {
+      const { $templateService } = useNuxtApp()
+      this.currentTemplate = await $templateService.updateTemplate(this.currentTemplate.data)
     },
     async fetchMyTemplates() {
       const { $templateService } = useNuxtApp()
-      return await handleAsyncOperation(
-        async () => {
-          const data = await $templateService.fetchMyTemplates()
-          this.templates = data.data
-          return data
-        },
-        loading => this.loading = loading,
-        (_) => {},
-        (_) => {},
-      )
+      this.templates = await $templateService.fetchMyTemplates()
     },
     async deleteTemplate() {
       const { $templateService } = useNuxtApp()
-      return await handleAsyncOperation(
-        () => $templateService.deleteTemplate(this.currentTemplate.id),
-        loading => this.loading = loading,
-        (_) => {},
-        (_) => {
-          this.templates = this.templates.filter(t => t.id !== this.currentTemplate.id)
-        },
-      )
+      this.currentTemplate = await $templateService.deleteTemplate(this.currentTemplate.data.id)
+      await this.fetchMyTemplates()
     },
-    createOrEditAttribute(attribute: DocumentAttribute) {
-      const index = this.currentTemplate.document_attributes.findIndex(attr => attr.name === attribute.name)
 
-      if (index !== -1) {
-        this.currentTemplate.document_attributes[index] = attribute
-      }
-      else {
-        this.currentTemplate.document_attributes.push(attribute)
-      }
-      this.resetCurrentAttribute()
-    },
-    setCurrentAttribute(attribuete: DocumentAttribute) {
-      this.currentAttribute = attribuete
-    },
     setCurrentTemplate(template: object) {
-      this.currentTemplate = template
+      this.currentTemplate = BaseInitializer.initState(template)
     },
     setCurrentTemplateById(templateId: number) {
-      this.currentTemplate = this.templates.find(t => t.id === templateId)
-    },
-    deleteAttribute() {
-      this.currentTemplate.document_attributes = this.currentTemplate.document_attributes.filter(attr => attr.name !== this.currentAttribute.name)
-      this.resetCurrentAttribute()
-    },
-    resetCurrentAttribute() {
-      this.currentAttribute = {
-        name: null,
-        type: null,
-        required: false,
-      } as unknown as DocumentAttribute
+      this.currentTemplate = BaseInitializer.initState(this.templates.data.find(t => t.id === templateId))
     },
     resetCurrentTemplate() {
-      this.currentTemplate = {
-        name: null,
-        id: null,
-        document_attributes: [],
-      }
-    },
-    resetapiResponse() {
-      this.apiResponse = {
-        success: false,
-        data: false,
-        message: '',
-      } as unknown as apiResponse<boolean>
+      this.currentTemplate = BaseInitializer.initState(TemplateInitializer.initState())
     },
   },
 })

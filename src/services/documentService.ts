@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { DocumentInitializer } from '~/models/dto/Document'
 
 class DocumentService {
   private supabase: SupabaseClient
@@ -8,60 +9,41 @@ class DocumentService {
   }
 
   async fetchMyDocuments() {
-    try {
-      // Crear nueva plantilla
-      const { data, error } = await this.supabase
-        .from('user_documents')
-        .select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)')
-      if (error) {
-        throw error
-      }
-      console.log(data)
-      return data
-    }
-    catch (error) {
-      console.error('Error al iniciar sesión:', error.message)
-      throw new Error('Error al iniciar sesión')
-    }
+    const query = this.supabase
+      .from('user_documents')
+      .select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)')
+    return safeApi(query, DocumentInitializer.initState())
   }
 
   async deleteDocument(documentId) {
-    try {
-      const { error } = await this.supabase
-        .from('user_documents')
-        .delete()
-        .eq('id', documentId)
-      if (error) {
-        throw error
-      }
-      return true
-    }
-    catch (error) {
-      console.error('Error al iniciar sesión:', error.message)
-      throw new Error('Error al iniciar sesión')
-    }
+    const query = await this.supabase
+      .from('user_documents')
+      .delete()
+      .eq('id', documentId)
+    return safeApi(query, DocumentInitializer.initState())
   }
 
-  async saveOrUpdateDocument(name: string, tempalteId: number, attributesValue: string) {
-    try {
-      const { data, error } = await this.supabase
-        .from('user_documents')
-        .upsert({
-          template_id: tempalteId,
-          name: name,
-          attributes: attributesValue,
-        }, { onConflict: ['template_id', 'name'] })
+  async updateDocument(id: string, templateId: number, attributesValue: string) {
+    const query = this.supabase
+      .from('user_documents')
+      .update({
+        template_id: templateId,
+        attributes: attributesValue,
+      })
+      .eq('id', id)
 
-      if (error) {
-        throw error
-      }
+    return safeApi(query, DocumentInitializer.initState())
+  }
 
-      return data
-    }
-    catch (error) {
-      console.error('Error al iniciar sesión:', error.message)
-      throw new Error('Error al iniciar sesión')
-    }
+  async createDocument(name: string, templateId: number, attributesValue: string) {
+    const query = this.supabase
+      .from('user_documents')
+      .insert({
+        template_id: templateId,
+        name: name,
+        attributes: attributesValue,
+      })
+    return safeApi(query, DocumentInitializer.initState())
   }
 }
 

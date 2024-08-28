@@ -20,12 +20,17 @@
               width="500"
             >
               <v-form
-                v-model="form"
                 @submit.prevent="onSubmit"
               >
+                <v-alert
+                  v-if="error"
+                  class="my-4"
+                  color="error"
+                  icon="mdi:alert-circle"
+                  :text="error"
+                />
                 <v-text-field
-                  v-model="email"
-                  :readonly="loading"
+                  v-model="form.email"
                   :rules="[required]"
                   placeholder="ejemplo@gmail.com"
                   class="mb-2"
@@ -34,9 +39,9 @@
                 />
 
                 <v-text-field
-                  v-model="password"
-                  :readonly="loading"
+                  v-model="form.password"
                   :rules="[required]"
+                  type="password"
                   label="Contraseña"
                   placeholder="Ingresa tu contraseña"
                   clearable
@@ -45,8 +50,6 @@
                 <br>
 
                 <v-btn
-                  :disabled="!form || loading"
-                  :loading="loading"
                   size="large"
                   type="submit"
                   block
@@ -63,7 +66,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/authStore' // Asegúrate de que la ruta sea correcta
 
@@ -72,24 +74,12 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
-const form = ref(false)
-const { email, password, error } = storeToRefs(authStore)
-const loading = ref(false)
+const { form, error, user } = storeToRefs(authStore)
 
 const onSubmit = async () => {
-  if (!form.value) return
-
-  loading.value = true
-
-  try {
-    await authStore.signInWithPassword()
+  await authStore.signInWithPassword()
+  if (user.value.aud === 'authenticated') {
     await navigateTo('/')
-  }
-  catch (err) {
-    console.error('Error al iniciar sesión:', err)
-  }
-  finally {
-    loading.value = false
   }
 }
 

@@ -7,7 +7,12 @@ export default defineNuxtConfig({
   build: {
     transpile: ['vuetify'],
   },
-
+  components: {
+    dirs: ['components', 'models'],
+  },
+  imports: {
+    dirs: ['models'],
+  },
   runtimeConfig: {
     public: {},
     apiSecret: 'ejemplossss',
@@ -35,6 +40,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxtjs/i18n',
     '@pinia/nuxt',
+    '@vueuse/nuxt',
   ],
 
   eslint: {

@@ -12,7 +12,7 @@
     >
       <template #toolbar>
         <quill-toolbar
-          :custom-buttoms="currentTemplate.document_attributes"
+          :custom-buttoms="currentTemplate.data.document_attributes"
           @click="insertText($event)"
         />
       </template>
@@ -34,8 +34,8 @@ import Delta from 'quill-delta'
 
 const quillDescr = ref(null)
 const templateStore = useTemplateStore()
-const { currentTemplate, loading } = storeToRefs(templateStore)
-const quillContent = ref(new Delta(currentTemplate.value.content))
+const { currentTemplate } = storeToRefs(templateStore)
+const quillContent = ref(new Delta(currentTemplate.value.data.content))
 
 const insertText = (newText) => {
   const quill = quillDescr.value.getQuill()
@@ -44,13 +44,12 @@ const insertText = (newText) => {
 }
 const savePdfTemplate = async () => {
   await templateStore.savePdfContent()
-  templateStore.resetapiResponse()
   await navigateTo({
     path: `/templates`,
   })
 }
 
 watch(quillContent, (newValue) => {
-  currentTemplate.value.content = newValue
+  currentTemplate.value.data.content = newValue
 }, { deep: true })
 </script>

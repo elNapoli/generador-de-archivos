@@ -30,11 +30,8 @@
           @click="dialog=true"
         />
         <templates-new-item-dialog
-          :item="currentAttribute"
-          :title="formTitle"
           :open="dialog"
           @dialog:close="dialog=false"
-          @update:item="templateStore.createOrEditAttribute($event)"
         />
 
         <v-dialog
@@ -69,6 +66,7 @@
     </template>
     <template #item.actions="{ item }">
       <v-icon
+        v-if="enableEdit"
         class="mr-2"
         icon="mdi:pencil"
         @click="editItem(item)"
@@ -102,13 +100,18 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  enableEdit: {
+    type: Boolean,
+    required: true,
+  },
   templateId: {
     type: number,
     default: null,
   },
 })
+const attributeTemplateStore = useAttributeTemplateStore()
 const templateStore = useTemplateStore()
-const { currentAttribute } = storeToRefs(templateStore)
+const { currentAttribute } = storeToRefs(attributeTemplateStore)
 const headers = [
   {
     title: 'Nombre',
@@ -120,10 +123,8 @@ const headers = [
   { title: 'Actions', key: 'actions', sortable: false },
 ]
 
-const formTitle = computed(() => (currentAttribute.value.name === null ? 'Agregar atributo' : 'Editar atributo'))
-
 const editItem = (item) => {
-  templateStore.setCurrentAttribute(item)
+  attributeTemplateStore.setCurrentAttribute(item)
   dialog.value = true
 }
 const getColor = (value) => {
@@ -132,11 +133,11 @@ const getColor = (value) => {
 }
 
 const deleteItem = (item) => {
-  templateStore.setCurrentAttribute(item)
+  attributeTemplateStore.setCurrentAttribute(item)
   dialogDelete.value = true
 }
 const deleteItemConfirm = () => {
-  templateStore.deleteAttribute()
+  templateStore.detachAttributesFromTemplate(currentAttribute.value.data)
   closeDelete()
 }
 

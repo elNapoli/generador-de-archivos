@@ -6,7 +6,7 @@
     <v-data-table
       :headers="headers"
       :hide-default-footer="true"
-      :items="documents"
+      :items="documents.data"
       :sort-by="[{ key: 'name', order: 'asc' }]"
     >
       <template #top>
@@ -21,7 +21,7 @@
           <v-btn
             class="text-none font-weight-regular"
             prepend-icon="mdi:file-plus"
-            text="Crear documento"
+            text="Crear formulario"
             variant="tonal"
             to="/documents/create"
           />
@@ -73,6 +73,7 @@
           class="mr-2"
           icon="bxs:file-export"
           color="blue"
+          :disabled="!item.document_templates.content"
           @click="llenar(item)"
         />
         <v-icon
@@ -126,7 +127,7 @@ defineProps({
 })
 const templateStore = useTemplateStore()
 const documentStore = useDocumentStore()
-const { documents, currentDocument } = storeToRefs(documentStore)
+const { documents } = storeToRefs(documentStore)
 const quillDescr = ref(null)
 
 const quillContent = ref('')
