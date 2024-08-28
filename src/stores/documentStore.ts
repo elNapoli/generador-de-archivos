@@ -1,8 +1,7 @@
-// stores/authStore.ts
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
-import { BaseInitializer } from '~/models/dto/BaseDto'
-import { DocumentInitializer } from '~/models/dto/DocumentDto'
+import { BaseInitializer } from '~/models/dto/BaseResponse'
+import { DocumentInitializer } from '~/models/dto/Document'
 
 const initialState = () => ({
   documents: BaseInitializer.initState([]),

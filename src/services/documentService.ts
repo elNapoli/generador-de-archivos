@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { DocumentInitializer } from '~/models/dto/DocumentDto'
+import { DocumentInitializer } from '~/models/dto/Document'
 
 class DocumentService {
   private supabase: SupabaseClient

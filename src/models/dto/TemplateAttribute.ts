@@ -1,4 +1,4 @@
-export interface TemplateAttributeDto {
+export interface TemplateAttribute {
   id: number
   name: string
   code_name: string
@@ -7,8 +7,9 @@ export interface TemplateAttributeDto {
 }
 
 export const TemplateAttributeInitializer = {
-  initState(): TemplateAttributeDto {
+  initState(): TemplateAttribute {
     return {
+      id: null,
       name: null,
       required: false,
       type: 'String',

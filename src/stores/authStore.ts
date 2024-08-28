@@ -1,23 +1,30 @@
 // stores/authStore.ts
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
+import { SessionInitializer } from '~/models/Session'
+import { UserInitializer } from '~/models/User'
 
 export const useAuthStore = defineStore('authStore', {
   state: () => ({
-    email: '',
-    password: '',
+    form: {
+      email: null,
+      password: null,
+    },
+    session: SessionInitializer.initState(),
+    user: UserInitializer.initState(),
+    error: null,
   }),
   actions: {
     async signInWithPassword() {
       const { $authService } = useNuxtApp()
-      const feedbackStore = useFeedbackStore()
-      feedbackStore.setLoading()
       try {
-        await $authService.signInWithPassword(this.email, this.password)
-        feedbackStore.setSuccess('Credenciales correctas')
+        const { data, error } = await $authService.signInWithPassword(this.form.email, this.form.password)
+        this.user = data.user ? data.user : UserInitializer.initState()
+        this.session = data.session ? data.session : SessionInitializer.initState()
+        this.error = error ? error.message : error
       }
       catch (e) {
-        feedbackStore.setError(e)
+        console.log(e)
       }
     },
 

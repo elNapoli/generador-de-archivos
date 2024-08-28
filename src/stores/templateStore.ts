@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { useNuxtApp } from '#app'
-import { BaseInitializer } from '~/models/dto/BaseDto'
-import { TemplateInitializer } from '~/models/dto/TemplateDto'
+import { BaseInitializer } from '~/models/dto/BaseResponse'
+import { TemplateInitializer } from '~/models/dto/Template'
 import { useAttributeTemplateStore } from '~/stores/attributeTemplateStore'
-import type { TemplateAttributeDto } from '~/models/dto/TemplateAttributeDto'
+import type { TemplateAttribute } from '~/models/dto/TemplateAttribute'
 
 const initialState = () => ({
   templates: BaseInitializer.initState([]),
@@ -26,7 +26,7 @@ export const useTemplateStore = defineStore('templateStore', {
       attributeTemplateStore.resetCurrentAttribute()
     },
 
-    async detachAttributesFromTemplate(attribute: TemplateAttributeDto) {
+    async detachAttributesFromTemplate(attribute: TemplateAttribute) {
       const attributeTemplateStore = useAttributeTemplateStore()
       await attributeTemplateStore.deleteAttribute(attribute)
       this.currentTemplate.data.document_attributes = this.currentTemplate.data.document_attributes.filter(attr => attr.name !== attribute.name)

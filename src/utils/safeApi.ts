@@ -1,10 +1,10 @@
-import type BaseDto from '~/models/dto/BaseDto'
-import { BaseInitializer } from '~/models/dto/BaseDto'
+import type BaseResponse from '~/models/dto/BaseResponse'
+import { BaseInitializer } from '~/models/dto/BaseResponse'
 
 export async function safeApi<T>(
   apiCall: Promise<T>,
   initialData?: T,
-): Promise<BaseDto<T>> {
+): Promise<BaseResponse<T>> {
   try {
     const data = await apiCall
     return {
@@ -24,6 +24,6 @@ export async function safeApi<T>(
         message: error instanceof Error ? error.message : 'Unknown error',
       },
       loading: false,
-    } as BaseDto<T>
+    } as BaseResponse<T>
   }
 }

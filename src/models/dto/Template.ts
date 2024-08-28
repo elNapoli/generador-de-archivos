@@ -1,15 +1,15 @@
-import type { TemplateAttributeDto } from '~/models/dto/TemplateAttributeDto'
+import type { TemplateAttribute } from '~/models/dto/TemplateAttribute'
 
-export interface TemplateDto {
+export interface Template {
   id?: number
   name?: string
-  document_attributes: TemplateAttributeDto[]
+  document_attributes: TemplateAttribute[]
   description: string
   content?: object
 }
 
 export const TemplateInitializer = {
-  initState(): TemplateDto {
+  initState(): Template {
     return {
       id: null,
       name: null,

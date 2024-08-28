@@ -1,4 +1,4 @@
-export interface DocumentDto {
+export interface Document {
   id: number
   name: string
   code_name: string
@@ -7,7 +7,7 @@ export interface DocumentDto {
 }
 
 export const DocumentInitializer = {
-  initState(): DocumentDto {
+  initState(): Document {
     return {
       template_id: null,
       status_id: false,

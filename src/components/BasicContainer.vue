@@ -9,10 +9,7 @@
 </template>
 
 <script setup>
-const feedbackStore = useFeedbackStore()
-onUnmounted(() => {
-  feedbackStore.resetState()
-})
+
 </script>
 
 <style scoped>

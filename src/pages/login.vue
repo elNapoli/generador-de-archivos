@@ -20,12 +20,17 @@
               width="500"
             >
               <v-form
-                v-model="form"
                 @submit.prevent="onSubmit"
               >
+                <v-alert
+                  v-if="error"
+                  class="my-4"
+                  color="error"
+                  icon="mdi:alert-circle"
+                  :text="error"
+                />
                 <v-text-field
-                  v-model="email"
-                  :readonly="loading"
+                  v-model="form.email"
                   :rules="[required]"
                   placeholder="ejemplo@gmail.com"
                   class="mb-2"
@@ -34,8 +39,7 @@
                 />
 
                 <v-text-field
-                  v-model="password"
-                  :readonly="loading"
+                  v-model="form.password"
                   :rules="[required]"
                   label="Contraseña"
                   placeholder="Ingresa tu contraseña"
@@ -45,8 +49,6 @@
                 <br>
 
                 <v-btn
-                  :disabled="!form || loading"
-                  :loading="feedbackStore.isLoading()"
                   size="large"
                   type="submit"
                   block
@@ -63,44 +65,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/authStore' // Asegúrate de que la ruta sea correcta
-import { FeedbackState } from '~/stores/feedbackStore'
 
 definePageMeta({
   layout: 'public',
 })
 
 const authStore = useAuthStore()
-const form = ref(false)
-const { email, password } = storeToRefs(authStore)
-const loading = ref(false)
-const feedbackStore = useFeedbackStore()
+const { form, error, user } = storeToRefs(authStore)
 
 const onSubmit = async () => {
-  if (!form.value) return
-
   await authStore.signInWithPassword()
+  if (user.value.aud === 'authenticated') {
+    await navigateTo('/')
+  }
 }
 
 const required = (v) => {
   return !!v || 'Campo requerido'
 }
-
-watch(
-  () => feedbackStore.status,
-  async (newStatus: FeedbackState) => {
-    if (newStatus === FeedbackState.SUCCESS) {
-      console.log(newStatus)
-      await navigateTo('/')
-    }
-  },
-)
-
-onUnmounted(() => {
-  feedbackStore.resetState()
-})
 </script>
 
 <style scoped>

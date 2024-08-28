@@ -9,22 +9,12 @@ class AuthService {
   }
 
   async signInWithPassword(email: string, password: string) {
-    try {
-      const { data, error } = await this.supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        throw error
-      }
-
-      return data
-    }
-    catch (error) {
-      console.error('Error al iniciar sesión:', error.message)
-      throw new Error('Error al iniciar sesión')
-    }
+    const r = this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    console.log(r)
+    return r
   }
 
   async signOut() {
