@@ -1,94 +1,71 @@
 import { defineStore } from 'pinia'
-import type { DocumentAttribute } from '../types/DocumentAttribute'
 import { useNuxtApp } from '#app'
 import type BaseDto from '~/models/dto/BaseDto'
-import type { TemplateDto } from '~/models/dto/TemplateDto'
+import { type TemplateDto, TemplateInitializer } from '~/models/dto/TemplateDto'
+import { safeBaseDto } from '~/utils/safeBaseDto'
+import { useAttributeTemplateStore } from '~/stores/attributeTemplateStore'
+import type { DocumentAttributeDto } from '~/models/dto/DocumentAttributeDto'
 
-const initialTemplate = {
-  data: {
-    id: null,
-    name: '',
-    description: '',
-    document_attributes: [],
-  },
-}
-const initialDocumentAttribute = {
-  data: {
-    name: '',
-    required: 'false',
-    type: 'String',
-  },
-}
 const initialState = () => ({
   templates: [] as BaseDto<TemplateDto>,
-  currentTemplate: initialTemplate as BaseDto<TemplateDto>,
-  currentAttribute: initialDocumentAttribute as DocumentAttribute,
+  currentTemplate: TemplateInitializer.initState(),
 })
 
 export const useTemplateStore = defineStore('templateStore', {
   state: initialState,
+  getters: {
+    editMode: state => state.currentTemplate.data.id !== null,
+  },
   actions: {
-
     async savePdfContent() {
       const { $templateService } = useNuxtApp()
       await $templateService.savePdfContent(this.currentTemplate.data.id, this.currentTemplate.data.content)
     },
-    async createOrUpdateTemplate() {
+    async attachAttributesFromTemplate(attribute: DocumentAttribute) {
+      const attributeTemplateStore = useAttributeTemplateStore()
+      await this.currentTemplate.data.document_attributes.push(attribute)
+      attributeTemplateStore.resetCurrentAttribute()
+    },
+
+    async detachAttributesFromTemplate(attribute: DocumentAttributeDto) {
+      const attributeTemplateStore = useAttributeTemplateStore()
+      await attributeTemplateStore.deleteAttribute(attribute)
+      this.currentTemplate.data.document_attributes = this.currentTemplate.data.document_attributes.filter(attr => attr.name !== attribute.name)
+    },
+    async createTemplate() {
       const { $templateService } = useNuxtApp()
-      console.log(this.currentTemplate.data)
+      const attributeTemplateStore = useAttributeTemplateStore()
+
       const response = await $templateService.createTemplate(this.currentTemplate.data)
-      console.log(response)
-      this.currentTemplate = {
-        ...response,
-        data: response.data ?? initialTemplate,
+      if (response.error) {
+        this.currentTemplate = response
+        return
       }
+      this.currentTemplate = await attributeTemplateStore.assignAttributesToTemplate(response.data.id, this.currentTemplate.data.document_attributes)
+    },
+    async updateTemplate() {
+      const { $templateService } = useNuxtApp()
+      this.currentTemplate = await $templateService.updateTemplate(this.currentTemplate.data)
     },
     async fetchMyTemplates() {
       const { $templateService } = useNuxtApp()
-      this.templates = await $templateService.fetchMyTemplates()
+      const response = await $templateService.fetchMyTemplates()
+      this.templates = safeBaseDto(response, [])
     },
     async deleteTemplate() {
       const { $templateService } = useNuxtApp()
-      const response = await $templateService.deleteTemplate(this.currentTemplate.data.id)
-      this.currentTemplate = {
-        ...response,
-        data: response.data ?? initialTemplate,
-      }
-      this.templates.data = this.templates.data.filter(t => t.id !== this.currentTemplate.id)
+      this.currentTemplate = await $templateService.deleteTemplate(this.currentTemplate.data.id)
+      await this.fetchMyTemplates()
     },
-    createOrEditAttribute(attribute: DocumentAttribute) {
-      const index = this.currentTemplate.data.document_attributes.findIndex(attr => attr.name === attribute.name)
 
-      if (index !== -1) {
-        this.currentTemplate.data.document_attributes[index] = attribute
-      }
-      else {
-        this.currentTemplate.data.document_attributes.push(attribute)
-      }
-      this.resetCurrentAttribute()
-    },
-    setCurrentAttribute(attribute: DocumentAttribute) {
-      this.currentAttribute.data = attribute
-    },
     setCurrentTemplate(template: object) {
       this.currentTemplate.data = template
-    },
-    setCurrentAttribute(attribute: object) {
-      this.currentAttribute.data = attribute
     },
     setCurrentTemplateById(templateId: number) {
       this.currentTemplate.data = this.templates.find(t => t.id === templateId)
     },
-    deleteAttribute() {
-      console.log('hola')
-      this.currentTemplate.data.document_attributes = this.currentTemplate.data.document_attributes.filter(attr => attr.name !== this.currentAttribute.data.name)
-      this.resetCurrentAttribute()
-    },
-    resetCurrentAttribute() {
-      this.currentAttribute = initialDocumentAttribute
-    },
     resetCurrentTemplate() {
-      this.currentTemplate = initialTemplate
+      this.currentTemplate = TemplateInitializer.initState()
     },
   },
 })

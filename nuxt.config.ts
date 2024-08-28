@@ -40,6 +40,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxtjs/i18n',
     '@pinia/nuxt',
+    '@vueuse/nuxt',
   ],
 
   eslint: {

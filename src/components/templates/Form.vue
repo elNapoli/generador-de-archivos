@@ -1,5 +1,13 @@
 <template>
-  <form @submit.prevent="templateStore.createOrUpdateTemplate()">
+  <form @submit.prevent="submit">
+    <v-alert
+      v-if="currentTemplate.error"
+      class="my-4"
+      color="error"
+      icon="mdi:alert-circle"
+    >
+      {{ currentTemplate.error?.message }}
+    </v-alert>
     <v-text-field
       v-model="currentTemplate.data.name"
       :counter="50"
@@ -12,6 +20,7 @@
     />
     <templates-item-attribute-table
       class="my-4"
+      :enable-edit="templateStore.editMode"
       :template-id="currentTemplate.data.id"
       :data="currentTemplate.data.document_attributes"
     />
@@ -21,7 +30,7 @@
       type="submit"
       block
     >
-      {{ currentTemplate.data.id ? 'Actualizar template' : 'Crear template' }}
+      {{ templateStore.editMode ? 'Actualizar template' : 'Crear template' }}
     </v-btn>
   </form>
 </template>
@@ -29,6 +38,15 @@
 <script setup>
 const templateStore = useTemplateStore()
 const { currentTemplate } = storeToRefs(templateStore)
+
+const submit = () => {
+  if (templateStore.editMode) {
+    templateStore.updateTemplate()
+  }
+  else {
+    templateStore.createTemplate()
+  }
+}
 </script>
 
 <style>

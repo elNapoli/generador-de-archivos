@@ -21,6 +21,7 @@
     "@pinia/nuxt": "^0.5.4",
     "@thebadge/quill-to-pdf": "^1.0.7",
     "@vueup/vue-quill": "^1.2.0",
+    "@vueuse/nuxt": "^11.0.3",
     "eslint": "^9.9.1",
     "file-saver": "^2.0.5",
     "framer-motion": "^11.3.30",

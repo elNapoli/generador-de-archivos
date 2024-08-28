@@ -17,7 +17,7 @@
               sm="6"
             >
               <v-text-field
-                v-model="localItem.name"
+                v-model="currentAttribute.data.name"
                 label="Nombre*"
                 required
               />
@@ -29,7 +29,7 @@
               sm="6"
             >
               <v-select
-                v-model="localItem.type"
+                v-model="currentAttribute.data.type"
                 :items="['String', 'Int']"
                 label="Tipo*"
                 required
@@ -42,7 +42,7 @@
               sm="6"
             >
               <v-checkbox
-                v-model="localItem.required"
+                v-model="currentAttribute.data.required"
                 label="Obligatorio"
               />
             </v-col>
@@ -61,10 +61,18 @@
           />
 
           <v-btn
+            v-if="templateStore.editMode"
             color="primary"
-            text="Save"
+            text="Editar"
             variant="tonal"
-            @click="saveItem"
+            @click="editAttribute"
+          />
+          <v-btn
+            v-else
+            color="primary"
+            text="Guardar"
+            variant="tonal"
+            @click="attachAttributesFromTemplate"
           />
         </v-card-actions>
       </v-card>
@@ -73,36 +81,29 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-  item: {
-    type: Object,
-    required: true,
-  },
+defineProps({
   open: {
     type: Boolean,
     required: true,
   },
 })
+const attributeTemplateStore = useAttributeTemplateStore()
+const templateStore = useTemplateStore()
 
-const emit = defineEmits(['update:item', 'dialog:close'])
+const { currentAttribute } = storeToRefs(attributeTemplateStore)
 
-const localItem = ref({ ...props.item })
-
-// Watch for changes in props.item and update localItem
-watch(() => props.item, (newVal) => {
-  localItem.value = { ...newVal }
-})
+const emit = defineEmits(['dialog:close'])
 
 const closeDialog = () => {
   emit('dialog:close', false)
 }
 
-const saveItem = () => {
-  emit('update:item', localItem.value)
+const attachAttributesFromTemplate = () => {
+  templateStore.attachAttributesFromTemplate(currentAttribute.value.data)
+  closeDialog()
+}
+const editAttribute = () => {
+  attributeTemplateStore.updateAttribute()
   closeDialog()
 }
 </script>

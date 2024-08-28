@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { type TemplateDto, TemplateInitializer } from '~/models/dto/TemplateDto'
 import type BaseDto from '~/models/dto/BaseDto'
-import type { TemplateDto } from '~/models/dto/TemplateDto'
+import { type DocumentAttributeDto, DocumentAttributeInitializer } from '~/models/dto/DocumentAttributeDto'
 
 class TemplateService {
   private supabase: SupabaseClient
@@ -24,7 +25,7 @@ class TemplateService {
   }
 
   async fetchMyTemplates() {
-    const response: BaseDto<TemplateDto[]> = await this.supabase
+    const query = this.supabase
       .from('document_templates')
       .select(`
           id,
@@ -33,70 +34,83 @@ class TemplateService {
           document_attributes(id, name, type, required, code_name),
           content
         `)
-    const data: BaseDto<TemplateDto[]> = {
-      ...response,
-      data: response.data ?? [],
-    }
-    return data
+    return safeApi(query, TemplateInitializer.initState())
   }
 
   // Eliminar una plantilla por ID
   async deleteTemplate(id: number) {
-    return this.supabase
+    const query = this.supabase
       .from('document_templates')
       .delete()
       .eq('id', id)
+    return safeApi(query, TemplateInitializer.initState())
+  }
+
+  async removeAttributesFromTemplate(id: number) {
+    const query = this.supabase
+      .from('document_attributes')
+      .delete()
+      .eq('id', id)
+    return safeApi(query, DocumentAttributeInitializer.initState())
+  }
+
+  async updateAttribute(attribute: DocumentAttributeDto) {
+    const query = this.supabase
+      .from('document_attributes')
+      .update({
+        name: attribute.name,
+        required: attribute.required,
+        type: attribute.type,
+      })
+      .eq('id', attribute.id)
+
+    return safeApi(query, DocumentAttributeInitializer.initState().data)
+  }
+
+  async updateTemplate(template: TemplateDto) {
+    const query = this.supabase
+      .from('document_templates')
+      .update({
+        name: template.name,
+        description: template.description,
+      })
+      .eq('id', template.id)
+      .select()
+      .single()
+    return safeApi(query, TemplateInitializer.initState())
   }
 
   async createTemplate(template: Template) {
-    const document_id = await this.saveOrUpdateTemplateRecord(template)
-    if (!document_id) return
-
-    const currentAttributes = await this.fetchCurrentAttributes(document_id)
-    if (!currentAttributes) return
-
-    await this.deleteRemovedAttributes(currentAttributes, template)
-    return await this.upsertAttributes(document_id, template.document_attributes)
+    const query = this.supabase
+      .from('document_templates')
+      .insert({
+        name: template.name,
+        description: template.description,
+      })
+      .select()
+      .single()
+    return safeApi(query, TemplateInitializer.initState())
   }
 
-  // Guardar o actualizar el registro de la plantilla
-  private async saveOrUpdateTemplateRecord(template: Template): Promise<number | undefined> {
-    let document_id = template.id
+  async assignAttributesToTemplate(templateId, attributes): Promise<BaseDto<DocumentAttributeDto>> {
+    let result = null
+    for (const attribute of attributes) {
+      const query = this.supabase
+        .from('document_attributes')
+        .upsert({
+          template_id: templateId,
+          code_name: this.convertToUpperAndUnderscore(attribute.name),
+          ...attribute,
+        }, { onConflict: ['template_id', 'code_name'] })
 
-    if (document_id) {
-      // Actualizar plantilla existente
-      const { error } = await this.supabase
-        .from('document_templates')
-        .update({
-          name: template.name,
-          description: template.description,
-        })
-        .eq('id', document_id)
+      result = await safeApi(query, TemplateInitializer.initState())
 
-      if (error) {
-        console.error('Error al actualizar la plantilla:', error)
-        return
+      if (result.error) {
+        console.error(`Error al asignar atributo ${attribute.name}:`, result.error)
+        return result
       }
     }
-    else {
-      // Crear nueva plantilla
-      const { data, error } = await this.supabase
-        .from('document_templates')
-        .insert({
-          name: template.name,
-          description: template.description,
-        })
-        .select()
-
-      if (error) {
-        console.error('Error al crear la plantilla:', error)
-        return
-      }
-
-      document_id = data[0].id
-    }
-
-    return document_id
+    return result
   }
 
   // Obtener los atributos actuales de la plantilla

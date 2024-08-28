@@ -5,4 +5,5 @@ export default interface BaseDto<T> {
   data: T
   error?: ErrorDto
   description?: string
+  loading: boolean
 }
