@@ -8,8 +8,16 @@ import { createClient } from 'jsr:@supabase/supabase-js@2'
 import Delta from 'npm:quill-delta@5.1.0'
 import pdf from 'npm:quill-to-pdf'
 import { replaceTemplatePlaceholders } from '../_shared/replaceTemplatePlaceholders.ts'
+import { corsHeaders } from '../_shared/cors.ts'
 
 Deno.serve(async (req: Request) => {
+  // This is needed if you're planning to invoke your function from a browser.
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 204,
+    })
+  }
   const { documentId } = await req.json()
   const supabaseClient = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
@@ -30,6 +38,7 @@ Deno.serve(async (req: Request) => {
 
       return new Response(blob, {
         headers: {
+          ...corsHeaders,
           'Content-Type': 'application/pdf',
           'Content-Disposition': `attachment; filename="${data.name}.pdf"`,
         },
@@ -38,14 +47,14 @@ Deno.serve(async (req: Request) => {
     }
     catch (e) {
       return new Response(JSON.stringify({ error: e.message }), {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       })
     }
   }
   else {
     return new Response(JSON.stringify({}), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
   }
