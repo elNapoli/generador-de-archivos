@@ -4,10 +4,10 @@
   "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt build --donenv .env.production",
     "local": "nuxt dev --dotenv .env.local",
     "dev": "nuxt dev --dotenv .env.development",
-    "generate": "nuxt generate",
+    "generate": "nuxt generate .env.production",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
