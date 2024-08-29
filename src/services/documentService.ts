@@ -15,6 +15,13 @@ class DocumentService {
     return safeApi(query, DocumentInitializer.initState())
   }
 
+  async generatePdf(documentId) {
+    const { data, error } = await this.supabase.functions.invoke('generate-pdf', {
+      body: JSON.stringify({ documentId: documentId }),
+    })
+    return data
+  }
+
   async deleteDocument(documentId) {
     const query = await this.supabase
       .from('user_documents')

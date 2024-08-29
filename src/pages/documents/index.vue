@@ -74,7 +74,7 @@
           icon="bxs:file-export"
           color="blue"
           :disabled="!item.document_templates.content"
-          @click="llenar(item)"
+          @click="documentStore.generatePdf(item)"
         />
         <v-icon
           icon="mdi:delete"
@@ -93,30 +93,10 @@
         <p>No hay atributos en el documento actual</p>
       </template>
     </v-data-table>
-    <quill-editor
-      id="quill-editor"
-      ref="quillDescr"
-      v-model:content="quillContent"
-      toolbar="#false"
-      read-only
-      theme="snow"
-    >
-      <template #toolbar>
-        <div id="false">
-          <p>Preview del documento</p>
-        </div>
-      </template>
-    </quill-editor>
-    <v-btn @click="exportToPDF">
-      exportar
-    </v-btn>
   </basic-container>
 </template>
 
 <script setup>
-import Delta from 'quill-delta'
-import { saveAs } from 'file-saver'
-
 const dialog = ref(false)
 const dialogDelete = ref(false)
 defineProps({
@@ -140,33 +120,7 @@ const headers = [
   { title: 'Estado', key: 'status' },
   { title: 'Actions', key: 'actions', sortable: false },
 ]
-const replaceTemplatePlaceholders = (delta, attributes) => {
-  // Recorre todos los objetos en el array "ops"
-  return delta.ops.map((op) => {
-    if (typeof op.insert === 'string') {
-      // Si "insert" es un string, realiza el reemplazo
-      return {
-        ...op,
-        insert: op.insert.replace(/{{(\w+)}}/g, (_, key) => attributes[key] || ''),
-      }
-    }
-    // Si "insert" no es un string, lo dejamos como está
-    return op
-  })
-}
 
-const llenar = async (doc) => {
-  const temp = replaceTemplatePlaceholders(doc.document_templates.content, doc.attributes)
-  quillContent.value = new Delta(temp)
-}
-const exportToPDF = async () => {
-  const { pdfExporter } = await import('quill-to-pdf')
-  const delta = quillDescr.value.getContents()
-  const deltaString = JSON.stringify(delta)
-  const finalData = JSON.parse(deltaString)
-  const blob = await pdfExporter.generatePdf(finalData)
-  saveAs(blob, 'documento-ejemplo.pdf') // downloads from the browser
-}
 const editItem = async (item) => {
   await documentStore.setCurrentDocument(item)
   await templateStore.setCurrentTemplateById(item.template_id)
