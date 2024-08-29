@@ -41,8 +41,13 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vueuse/nuxt',
+    'nuxt-security',
   ],
-
+  security: {
+    corsHandler: {
+      origin: '*',
+    },
+  },
   eslint: {
     config: {
       stylistic: true,

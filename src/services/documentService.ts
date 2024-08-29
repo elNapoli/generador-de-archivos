@@ -16,10 +16,7 @@ class DocumentService {
   }
 
   async generatePdf(documentId) {
-    const { data, error } = await this.supabase.functions.invoke('generate-pdf', {
-      headers: {
-        'HTTP Version': 'HTTP/3',
-      },
+    const { data, error } = await this.supabase.functions.invoke('generate-document', {
       body: JSON.stringify({ documentId: documentId }),
     })
     console.log(error)

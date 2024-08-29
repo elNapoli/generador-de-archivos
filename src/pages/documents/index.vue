@@ -74,7 +74,7 @@
           icon="bxs:file-export"
           color="blue"
           :disabled="!item.document_templates.content"
-          @click="documentStore.generatePdf(item)"
+          @click="documentStore.generatePdf(item.id)"
         />
         <v-icon
           icon="mdi:delete"
