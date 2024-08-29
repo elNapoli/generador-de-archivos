@@ -63,6 +63,14 @@
           </v-dialog>
         </v-toolbar>
       </template>
+      <template #item.path="{ value }">
+        <v-chip
+          v-if="value"
+          @click="documentStore.getPublicUrl(value)"
+        >
+          Documento
+        </v-chip>
+      </template>
       <template #item.actions="{ item }">
         <v-icon
           class="mr-2"
@@ -70,11 +78,12 @@
           @click="editItem(item)"
         />
         <v-icon
+          v-if="!item.path"
           class="mr-2"
           icon="bxs:file-export"
           color="blue"
           :disabled="!item.document_templates.content"
-          @click="documentStore.generatePdf(item)"
+          @click="documentStore.generatePdf(item.id)"
         />
         <v-icon
           icon="mdi:delete"
@@ -107,15 +116,18 @@ defineProps({
 })
 const templateStore = useTemplateStore()
 const documentStore = useDocumentStore()
-const { documents } = storeToRefs(documentStore)
-const quillDescr = ref(null)
+const { documents, publicUrl } = storeToRefs(documentStore)
 
-const quillContent = ref('')
 const headers = [
   {
     title: 'Nombre',
     align: 'start',
     key: 'name',
+  },
+  {
+    title: 'Archivo',
+    align: 'center',
+    key: 'path',
   },
   { title: 'Estado', key: 'status' },
   { title: 'Actions', key: 'actions', sortable: false },
@@ -142,5 +154,11 @@ const closeDelete = () => {
 onMounted(() => {
   documentStore.fetchMyDocuments()
   templateStore.fetchMyTemplates()
+})
+
+watch(publicUrl, async (newPublicUrl, _) => {
+  if (newPublicUrl) {
+    await navigateTo(newPublicUrl.publicUrl, { external: true, open: { target: '_blank' } })
+  }
 })
 </script>

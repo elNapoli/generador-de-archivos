@@ -6,6 +6,7 @@ import { DocumentInitializer } from '~/models/dto/Document'
 const initialState = () => ({
   documents: BaseInitializer.initState([]),
   currentDocument: BaseInitializer.initState(DocumentInitializer.initState()),
+  publicUrl: null,
 })
 
 export const useDocumentStore = defineStore('documentStore', {
@@ -24,6 +25,10 @@ export const useDocumentStore = defineStore('documentStore', {
       const { $documentService } = useNuxtApp()
       const attributesValueJson = JSON.stringify(this.currentDocument.data.attributes)
       this.currentDocument = await $documentService.createDocument(this.currentDocument.data.name, templateId, attributesValueJson)
+    },
+    async getPublicUrl(path) {
+      const { $documentService } = useNuxtApp()
+      this.publicUrl = await $documentService.getPublicUrl(path)
     },
     async updateDocument(templateId) {
       const { $documentService } = useNuxtApp()
@@ -45,6 +50,7 @@ export const useDocumentStore = defineStore('documentStore', {
       const { $documentService } = useNuxtApp()
       const response = await $documentService.generatePdf(documentId)
       console.log(response)
+      await this.fetchMyDocuments()
     },
     async deleteDocument() {
       const { $documentService } = useNuxtApp()

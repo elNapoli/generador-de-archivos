@@ -11,12 +11,21 @@ class DocumentService {
   async fetchMyDocuments() {
     const query = this.supabase
       .from('user_documents')
-      .select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)')
+      .select('template_id,path, status_id, name, id, generated_at, attributes, document_templates(content)')
     return safeApi(query, DocumentInitializer.initState())
   }
 
+  async getPublicUrl(path) {
+    const { data } = this.supabase
+      .storage
+      .from('documents')
+      .getPublicUrl(path)
+
+    return data
+  }
+
   async generatePdf(documentId) {
-    const { data, error } = await this.supabase.functions.invoke('generate-pdf', {
+    const { data, error } = await this.supabase.functions.invoke('generate-document', {
       body: JSON.stringify({ documentId: documentId }),
     })
     return data

@@ -4,58 +4,57 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
-import { createClient } from 'jsr:@supabase/supabase-js@2'
 import Delta from 'npm:quill-delta@5.1.0'
 import pdf from 'npm:quill-to-pdf'
-import { replaceTemplatePlaceholders } from '../_shared/replaceTemplatePlaceholders.ts'
 import { corsHeaders } from '../_shared/cors.ts'
+import { supabaseClient } from '../_shared/supabaseClient.ts'
+import { generateUniqueName } from '../_shared/generateUniqueName.ts'
+import { replaceTemplatePlaceholders } from '../_shared/replaceTemplatePlaceholders.ts'
 
-Deno.serve(async (req: Request) => {
-  // This is needed if you're planning to invoke your function from a browser.
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: corsHeaders,
       status: 204,
     })
   }
+  const authHeader = req.headers.get('Authorization')!
+  const supabase = supabaseClient(authHeader)
   const { documentId } = await req.json()
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-    { global: { headers: { Authorization: req.headers.get('Authorization')! } } },
-  )
-  // Database queries will have RLS policies enforced
   const {
     data,
     error,
-  } = await supabaseClient.from('user_documents').select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)').eq('id', documentId)
+  } = await supabase.from('user_documents').select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)').eq('id', documentId)
     .maybeSingle()
   if (data) {
     try {
       const temp = replaceTemplatePlaceholders(data.document_templates.content, JSON.parse(data.attributes))
       const deltaObject = new Delta(temp)
       const blob = await pdf.pdfExporter.generatePdf(deltaObject)
+      const response = await supabase
+        .storage
+        .from('documents')
+        .upload(`${data.id}/${generateUniqueName('doc-')}.pdf`, blob)
+      console.log(response)
 
-      return new Response(blob, {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename="${data.name}.pdf"`,
-        },
+      const hola = await supabase
+        .from('user_documents')
+        .update({
+          path: response.data.path,
+        })
+        .eq('id', data.id)
+      console.log(hola)
+      return new Response(JSON.stringify({ data: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+
         status: 200,
       })
     }
     catch (e) {
-      return new Response(JSON.stringify({ error: e.message }), {
+      return new Response(JSON.stringify({ error: error ? error : e.message }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+        status: 400,
       })
     }
-  }
-  else {
-    return new Response(JSON.stringify({}), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    })
   }
 })
