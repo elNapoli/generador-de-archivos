@@ -41,6 +41,11 @@ export const useDocumentStore = defineStore('documentStore', {
         })),
       }
     },
+    async generatePdf(documentId) {
+      const { $documentService } = useNuxtApp()
+      const response = await $documentService.generatePdf(documentId)
+      console.log(response)
+    },
     async deleteDocument() {
       const { $documentService } = useNuxtApp()
       this.currentDocument = await $documentService.deleteDocument(this.currentDocument.data.id)

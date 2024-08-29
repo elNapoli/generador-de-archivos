@@ -95,13 +95,14 @@ class TemplateService {
   async assignAttributesToTemplate(templateId, attributes): Promise<BaseResponse<TemplateAttribute>> {
     let result = null
     for (const attribute of attributes) {
+      const { id, ...attributeWithoutId } = attribute
       const query = this.supabase
         .from('document_attributes')
-        .upsert({
+        .insert({
           template_id: templateId,
           code_name: this.convertToUpperAndUnderscore(attribute.name),
-          ...attribute,
-        }, { onConflict: ['template_id', 'code_name'] })
+          ...attributeWithoutId,
+        })
 
       result = await safeApi(query, TemplateInitializer.initState())
 
