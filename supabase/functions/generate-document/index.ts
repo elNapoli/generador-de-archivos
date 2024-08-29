@@ -30,6 +30,7 @@ Deno.serve(async (req: Request) => {
     error,
   } = await supabaseClient.from('user_documents').select('template_id, status_id, name, id, generated_at, attributes, document_templates(content)').eq('id', documentId)
     .maybeSingle()
+  console.log(data)
   if (data) {
     try {
       const temp = replaceTemplatePlaceholders(data.document_templates.content, JSON.parse(data.attributes))
@@ -53,7 +54,7 @@ Deno.serve(async (req: Request) => {
     }
   }
   else {
-    return new Response(JSON.stringify({}), {
+    return new Response(JSON.stringify({ baldo: 123 }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
