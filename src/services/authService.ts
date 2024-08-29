@@ -9,12 +9,10 @@ class AuthService {
   }
 
   async signInWithPassword(email: string, password: string) {
-    const r = this.supabase.auth.signInWithPassword({
+    return this.supabase.auth.signInWithPassword({
       email,
       password,
     })
-    console.log(r)
-    return r
   }
 
   async signOut() {
