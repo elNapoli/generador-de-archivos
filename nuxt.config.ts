@@ -3,7 +3,6 @@ import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   srcDir: 'src',
   devtools: { enabled: true },
-
   build: {
     transpile: ['vuetify'],
   },
@@ -41,7 +40,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vueuse/nuxt',
-    'nuxt-security',
+    // 'nuxt-security',
   ],
   security: {
     corsHandler: {

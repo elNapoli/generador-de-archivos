@@ -1,18 +1,16 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { DocumentInitializer } from '~/models/dto/Document'
+import type { Database } from '~/types/database.types'
 
 class DocumentService {
   private supabase: SupabaseClient
 
-  constructor(supabase: SupabaseClient) {
-    this.supabase = supabase
+  constructor() {
+    this.supabase = useSupabaseClient<Database>()
   }
 
   async fetchMyDocuments() {
-    const query = this.supabase
-      .from('user_documents')
-      .select('template_id,path, status_id, name, id, generated_at, attributes, document_templates(content)')
-    return safeApi(query, DocumentInitializer.initState())
+    const response = await this.supabase.functions.invoke('document', { method: 'GET' })
+    return JSON.parse(response.data)
   }
 
   async getPublicUrl(path) {
@@ -32,34 +30,27 @@ class DocumentService {
   }
 
   async deleteDocument(documentId) {
-    const query = await this.supabase
-      .from('user_documents')
-      .delete()
-      .eq('id', documentId)
-    return safeApi(query, DocumentInitializer.initState())
+    const response = await this.supabase.functions.invoke(
+      `document/${documentId}`,
+      {
+        method: 'DELETE',
+      })
+    return JSON.parse(response.data)
   }
 
   async updateDocument(id: string, templateId: number, attributesValue: string) {
-    const query = this.supabase
-      .from('user_documents')
-      .update({
-        template_id: templateId,
-        attributes: attributesValue,
-      })
-      .eq('id', id)
-
-    return safeApi(query, DocumentInitializer.initState())
+    console.log('adsfadfasdf')
+    return await this.supabase.functions.invoke(`document/${id}`, {
+      body: JSON.stringify({ templateId: templateId, attributesValue: attributesValue }),
+      method: 'PATCH',
+    })
   }
 
   async createDocument(name: string, templateId: number, attributesValue: string) {
-    const query = this.supabase
-      .from('user_documents')
-      .insert({
-        template_id: templateId,
-        name: name,
-        attributes: attributesValue,
-      })
-    return safeApi(query, DocumentInitializer.initState())
+    return await this.supabase.functions.invoke('document', {
+      body: JSON.stringify({ name: name, templateId: templateId, attributesValue: attributesValue }),
+      method: 'POST',
+    })
   }
 }
 

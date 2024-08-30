@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import { useNuxtApp } from '#app'
 import { BaseInitializer } from '~/models/dto/BaseResponse'
 import { DocumentInitializer } from '~/models/dto/Document'
+import DocumentService from '~/services/documentService'
 
 const initialState = () => ({
   documents: BaseInitializer.initState([]),
@@ -22,22 +22,23 @@ export const useDocumentStore = defineStore('documentStore', {
       this.currentDocument.data.attributes = BaseInitializer.initState({})
     },
     async createDocument(templateId) {
-      const { $documentService } = useNuxtApp()
+      const service = new DocumentService()
       const attributesValueJson = JSON.stringify(this.currentDocument.data.attributes)
-      this.currentDocument = await $documentService.createDocument(this.currentDocument.data.name, templateId, attributesValueJson)
+      this.currentDocument = await service.createDocument(this.currentDocument.data.name, templateId, attributesValueJson)
     },
     async getPublicUrl(path) {
-      const { $documentService } = useNuxtApp()
-      this.publicUrl = await $documentService.getPublicUrl(path)
+      const service = new DocumentService()
+      this.publicUrl = await service.getPublicUrl(path)
     },
     async updateDocument(templateId) {
-      const { $documentService } = useNuxtApp()
+      const service = new DocumentService()
       const attributesValueJson = JSON.stringify(this.currentDocument.data.attributes)
-      this.currentDocument = await $documentService.updateDocument(this.currentDocument.data.id, templateId, attributesValueJson)
+      this.currentDocument = await service.updateDocument(this.currentDocument.data.id, templateId, attributesValueJson)
     },
     async fetchMyDocuments() {
-      const { $documentService } = useNuxtApp()
-      const response = await $documentService.fetchMyDocuments()
+      const service = new DocumentService()
+      const response = await service.fetchMyDocuments()
+      console.log(response.data)
       this.documents = {
         ...response,
         data: response.data.map(item => ({
@@ -47,14 +48,14 @@ export const useDocumentStore = defineStore('documentStore', {
       }
     },
     async generatePdf(documentId) {
-      const { $documentService } = useNuxtApp()
-      const response = await $documentService.generatePdf(documentId)
+      const service = new DocumentService()
+      const response = await service.generatePdf(documentId)
       console.log(response)
       await this.fetchMyDocuments()
     },
     async deleteDocument() {
-      const { $documentService } = useNuxtApp()
-      this.currentDocument = await $documentService.deleteDocument(this.currentDocument.data.id)
+      const service = new DocumentService()
+      this.currentDocument = await service.deleteDocument(this.currentDocument.data.id)
       await this.fetchMyDocuments()
     },
   },
