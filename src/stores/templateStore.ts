@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
 import { TemplateInitializer } from '~/models/dto/Template'
-import { type TemplateAttribute, TemplateAttributeInitializer } from '~/models/dto/TemplateAttribute'
+import type { TemplateAttribute } from '~/models/dto/TemplateAttribute'
+import { TemplateAttributeInitializer } from '~/models/dto/TemplateAttribute'
 import TemplateService from '~/services/templateService'
+import { handleAsyncAction } from '~/utils/asyncHelpers'
 
 const initialState = () => ({
   templates: [],
@@ -18,88 +20,111 @@ export const useTemplateStore = defineStore('templateStore', {
     editMode: state => state.currentTemplate.id !== null,
   },
   actions: {
-    setCurrentAttribute(attribute: TemplateAttribute) {
-      this.currentAttribute = attribute
-    },
     async savePdfContent() {
-      const service = new TemplateService()
-      await service.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          await service.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
+        },
+      )
     },
     async attachAttributesFromTemplate(attribute: DocumentAttribute) {
       this.currentTemplate.document_attributes.push(attribute)
       this.resetCurrentAttribute()
     },
-
     async detachAttributesFromTemplate() {
-      const service = new TemplateService()
-      if (this.currentAttribute.id) {
-        await service.detachAttributeFromTemplate(this.currentAttribute.id, this.currentTemplate.id)
-      }
-      this.currentTemplate.document_attributes = this.currentTemplate.document_attributes.filter(
-        attr =>
-          attr.name !== this.currentAttribute.name,
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          if (this.currentAttribute.id) {
+            await service.detachAttributeFromTemplate(this.currentAttribute.id, this.currentTemplate.id)
+          }
+          this.currentTemplate.document_attributes = this.currentTemplate.document_attributes.filter(
+            attr => attr.name !== this.currentAttribute.name,
+          )
+        },
+        () => {
+          this.resetCurrentAttribute()
+        },
       )
-      this.resetCurrentAttribute()
     },
     async attachAttributeToTemplate() {
-      const service = new TemplateService()
-      this.loading = true
-      const response = await service.attachAttributeToTemplate(this.currentTemplate.id, this.currentAttribute)
-      this.error = response.error
-      this.status = response.status
-      this.resetCurrentAttribute()
-      await this.getTemplate(this.currentTemplate.id)
-      this.loading = false
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          return await service.attachAttributeToTemplate(this.currentTemplate.id, this.currentAttribute)
+        },
+        async (_) => {
+          this.resetCurrentAttribute()
+          await this.getTemplate(this.currentTemplate.id)
+        },
+      )
+    },
+    async createTemplate() {
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          return await service.createTemplate(this.currentTemplate)
+        },
+      )
+    },
+    async updateTemplate() {
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          return await service.updateTemplate(this.currentTemplate)
+        },
+      )
+    },
+    async fetchMyTemplates() {
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          return await service.fetchMyTemplates()
+        },
+        (response) => {
+          this.templates = response.data
+        },
+      )
+    },
+    async getTemplate(id: string) {
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          return await service.getTemplate(id)
+        },
+        (response) => {
+          this.currentTemplate = response.data
+        },
+      )
+    },
+    async deleteTemplate() {
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          return await service.deleteTemplate(this.currentTemplate.id)
+        },
+        async (_) => {
+          if (!this.error) {
+            await this.fetchMyTemplates()
+          }
+        },
+      )
+    },
+    setCurrentAttribute(attribute: TemplateAttribute) {
+      this.currentAttribute = attribute
     },
     resetCurrentAttribute() {
       this.currentAttribute = TemplateAttributeInitializer.initState()
     },
-    async createTemplate() {
-      this.loading = true
-      const service = new TemplateService()
-      const response = await service.createTemplate(this.currentTemplate)
-      this.error = response.error
-      this.status = response.status
-      this.loading = false
-    },
-    async updateTemplate() {
-      this.loading = true
-      const service = new TemplateService()
-      const response = await service.updateTemplate(this.currentTemplate)
-      this.error = response.error
-      this.status = response.status
-      this.loading = false
-    },
-    async fetchMyTemplates() {
-      this.loading = true
-      const service = new TemplateService()
-      const response = await service.fetchMyTemplates()
-      this.templates = response.data
-      this.error = response.error
-      this.status = response.status
-      this.loading = false
-    },
-
-    async getTemplate(id: string) {
-      this.loading = true
-      const service = new TemplateService()
-      const response = await service.getTemplate(id)
-      this.currentTemplate = response.data
-      this.error = response.error
-      this.status = response.status
-      this.loading = false
-    },
-    async deleteTemplate() {
-      this.loading = true
-      const service = new TemplateService()
-      const response = await service.deleteTemplate(this.currentTemplate.id)
-      this.loading = false
-      this.error = response.error
-      if (!this.error) {
-        await this.fetchMyTemplates()
-      }
-    },
-
     setCurrentTemplate(template: object) {
       this.currentTemplate = template
     },

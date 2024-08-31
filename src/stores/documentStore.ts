@@ -16,49 +16,76 @@ export const useDocumentStore = defineStore('documentStore', {
     editMode: state => state.currentDocument.id != null,
   },
   actions: {
-    setCurrentDocument(item) {
-      this.currentDocument = item
-    },
-    resetAttributesValue() {
-      this.currentDocument.attributes = {}
-    },
+
     async createDocument(templateId) {
-      this.loading = true
-      const service = new DocumentService()
-      const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
-      const response = await service.createDocument(this.currentDocument.name, templateId, attributesValueJson)
-      this.error = response.error
-      this.status = response.status
-      this.currentDocument = response.data
-      this.loading = false
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new DocumentService()
+          const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
+          return await service.createDocument(this.currentDocument.name, templateId, attributesValueJson)
+        },
+        (response) => {
+          this.currentDocument = response.data
+        },
+      )
     },
     async getPublicUrl(docId) {
       const service = new DocumentService()
       return await service.getPublicUrl(docId)
     },
     async updateDocument(templateId) {
-      const service = new DocumentService()
-      const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
-      this.currentDocument = await service.updateDocument(this.currentDocument.id, templateId, attributesValueJson)
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new DocumentService()
+          const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
+          return await service.updateDocument(this.currentDocument.id, templateId, attributesValueJson)
+        },
+        (response) => {
+          this.currentDocument = response.data
+        },
+      )
     },
     async fetchMyDocuments() {
-      this.loading = true
-      const service = new DocumentService()
-      const response = await service.fetchMyDocuments()
-      this.documents = response.data
-      this.error = response.error
-      this.status = response.status
-      this.loading = false
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new DocumentService()
+          return await service.fetchMyDocuments()
+        },
+        (response) => {
+          this.documents = response.data
+        },
+      )
     },
     async generatePdf(documentId) {
-      const service = new DocumentService()
-      await service.generatePdf(documentId)
-      await this.fetchMyDocuments()
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new DocumentService()
+          await service.generatePdf(documentId)
+          await this.fetchMyDocuments()
+        },
+      )
     },
     async deleteDocument() {
-      const service = new DocumentService()
-      this.currentDocument = await service.deleteDocument(this.currentDocument.id)
-      await this.fetchMyDocuments()
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new DocumentService()
+          await service.deleteDocument(this.currentDocument.id)
+        },
+        async () => {
+          await this.fetchMyDocuments()
+        },
+      )
+    },
+    setCurrentDocument(item) {
+      this.currentDocument = item
+    },
+    resetAttributesValue() {
+      this.currentDocument.attributes = {}
     },
   },
 })
