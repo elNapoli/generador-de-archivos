@@ -4,110 +4,108 @@
       <Breadcrumb />
     </template>
     <v-alert
-      v-if="templates.error"
+      v-if="error"
       color="error"
       icon="mdi:alert-circle"
       :value="true"
     >
-      {{ templates.error?.message }}
+      {{ error?.message }}
     </v-alert>
-    <v-alert
-      v-if="currentTemplate.error"
-      color="error"
-      icon="mdi:alert-circle"
-      :value="true"
-    >
-      {{ currentTemplate.error?.message }}
-    </v-alert>
-    <v-data-table
-      :headers="headers"
-      :hide-default-footer="true"
-      :items="templates.data"
-      :sort-by="[{ key: 'name', order: 'asc' }]"
-    >
-      <template #top>
-        <v-toolbar>
-          <v-toolbar-title>Plantillas</v-toolbar-title>
-          <v-divider
-            class="mx-4"
-            inset
-            vertical
-          />
-          <v-spacer />
-          <v-btn
-            class="text-none font-weight-regular"
-            prepend-icon="mdi:file-plus"
-            text="Agregar plantilla"
-            variant="tonal"
-            to="/templates/create"
-          />
-          <templates-new-item-dialog
-            :item="currentAttribute"
-            :title="formTitle"
-            :open="dialog"
-            @dialog:close="dialog=false"
-            @update:item="templateStore.createOrEditAttribute($event)"
-          />
+    <v-row class="my-3">
+      <v-data-table
+        :headers="headers"
+        :hide-default-footer="true"
+        :items="templates"
+        :loading="loading"
+        :sort-by="[{ key: 'name', order: 'asc' }]"
+      >
+        <template #loading>
+          <v-skeleton-loader type="table-row@10" />
+        </template>
+        <template #top>
+          <v-toolbar>
+            <v-toolbar-title>Plantillas</v-toolbar-title>
+            <v-divider
+              class="mx-4"
+              inset
+              vertical
+            />
+            <v-spacer />
+            <v-btn
+              class="text-none font-weight-regular"
+              prepend-icon="mdi:file-plus"
+              text="Agregar plantilla"
+              variant="tonal"
+              to="/templates/create"
+            />
+            <templates-new-item-dialog
+              :item="currentAttribute"
+              :title="formTitle"
+              :open="dialog"
+              @dialog:close="dialog=false"
+              @update:item="templateStore.createOrEditAttribute($event)"
+            />
 
-          <v-dialog
-            v-model="dialogDelete"
-            max-width="500px"
-          >
-            <v-card>
-              <v-card-title>
-                ¿Seguro que deseas eliminar este atributo?
-              </v-card-title>
-              <v-card-actions>
-                <v-spacer />
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="closeDelete"
-                >
-                  Cancel
-                </v-btn>
-                <v-btn
-                  color="blue-darken-1"
-                  variant="text"
-                  @click="deleteItemConfirm"
-                >
-                  Eliminar
-                </v-btn>
-                <v-spacer />
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template #item.actions="{ item }">
-        <v-icon
-          class="mr-2"
-          icon="mdi:pencil"
-          @click="editItem(item)"
-        />
-
-        <v-icon
-          class="mr-2"
-          icon="bxs:file-pdf"
-          @click="createPdf(item)"
-        />
-        <v-icon
-          icon="mdi:delete"
-          color="red"
-          @click="deleteItem(item)"
-        />
-      </template>
-      <template #item.required="{ value }">
-        <v-chip :color="getColor(value)">
+            <v-dialog
+              v-model="dialogDelete"
+              max-width="500px"
+            >
+              <v-card>
+                <v-card-title>
+                  ¿Seguro que deseas eliminar este atributo?
+                </v-card-title>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn
+                    color="blue-darken-1"
+                    variant="text"
+                    @click="closeDelete"
+                  >
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    color="blue-darken-1"
+                    variant="text"
+                    @click="deleteItemConfirm"
+                  >
+                    Eliminar
+                  </v-btn>
+                  <v-spacer />
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-toolbar>
+        </template>
+        <template #item.actions="{ item }">
           <v-icon
-            :icon="value? 'mdi:check':'mdi:close'"
+            class="mr-2"
+            icon="mdi:pencil"
+            @click="editItem(item)"
           />
-        </v-chip>
-      </template>
-      <template #no-data>
-        <p>No hay atributos en el documento actual</p>
-      </template>
-    </v-data-table>
+
+          <v-icon
+            class="mr-2"
+            icon="bxs:file-pdf"
+            @click="createPdf(item)"
+          />
+          <v-icon
+            icon="mdi:delete"
+            color="red"
+            @click="deleteItem(item)"
+          />
+        </template>
+        <template #item.required="{ value }">
+          <v-chip :color="getColor(value)">
+            <v-icon
+              :icon="value? 'mdi:check':'mdi:close'"
+            />
+          </v-chip>
+        </template>
+        <template #no-data>
+          <p>No hay atributos en el documento actual</p>
+        </template>
+      </v-data-table>
+    </v-row>
   </basic-container>
 </template>
 
@@ -122,7 +120,7 @@ defineProps({
 })
 
 const templateStore = useTemplateStore()
-const { templates, currentTemplate } = storeToRefs(templateStore)
+const { templates, loading, error, status } = storeToRefs(templateStore)
 
 const headers = [
   {
@@ -159,5 +157,8 @@ const closeDelete = () => {
 }
 onMounted(() => {
   templateStore.fetchMyTemplates()
+})
+onUnmounted(() => {
+  templateStore.resetFeedback()
 })
 </script>

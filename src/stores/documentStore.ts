@@ -26,9 +26,9 @@ export const useDocumentStore = defineStore('documentStore', {
       const attributesValueJson = JSON.stringify(this.currentDocument.data.attributes)
       this.currentDocument = await service.createDocument(this.currentDocument.data.name, templateId, attributesValueJson)
     },
-    async getPublicUrl(path) {
+    async getPublicUrl(docId) {
       const service = new DocumentService()
-      this.publicUrl = await service.getPublicUrl(path)
+      this.publicUrl = await service.getPublicUrl(docId)
     },
     async updateDocument(templateId) {
       const service = new DocumentService()
@@ -37,15 +37,7 @@ export const useDocumentStore = defineStore('documentStore', {
     },
     async fetchMyDocuments() {
       const service = new DocumentService()
-      const response = await service.fetchMyDocuments()
-      console.log(response.data)
-      this.documents = {
-        ...response,
-        data: response.data.map(item => ({
-          ...item,
-          attributes: JSON.parse(item.attributes),
-        })),
-      }
+      this.documents = await service.fetchMyDocuments()
     },
     async generatePdf(documentId) {
       const service = new DocumentService()

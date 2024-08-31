@@ -1,69 +1,117 @@
 import { defineStore } from 'pinia'
-import { useNuxtApp } from '#app'
-import { BaseInitializer } from '~/models/dto/BaseResponse'
 import { TemplateInitializer } from '~/models/dto/Template'
-import { useAttributeTemplateStore } from '~/stores/attributeTemplateStore'
-import type { TemplateAttribute } from '~/models/dto/TemplateAttribute'
+import { type TemplateAttribute, TemplateAttributeInitializer } from '~/models/dto/TemplateAttribute'
+import TemplateService from '~/services/templateService'
 
 const initialState = () => ({
-  templates: BaseInitializer.initState([]),
-  currentTemplate: BaseInitializer.initState(TemplateInitializer.initState()),
+  templates: [],
+  currentTemplate: TemplateInitializer.initState(),
+  currentAttribute: TemplateAttributeInitializer.initState(),
+  loading: false,
+  status: 0,
+  error: null,
 })
 
 export const useTemplateStore = defineStore('templateStore', {
   state: initialState,
   getters: {
-    editMode: state => state.currentTemplate.data.id !== null,
+    editMode: state => state.currentTemplate.id !== null,
   },
   actions: {
+    setCurrentAttribute(attribute: TemplateAttribute) {
+      this.currentAttribute = attribute
+    },
     async savePdfContent() {
-      const { $templateService } = useNuxtApp()
-      await $templateService.savePdfContent(this.currentTemplate.data.id, this.currentTemplate.data.content)
+      const service = new TemplateService()
+      await service.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
     },
     async attachAttributesFromTemplate(attribute: DocumentAttribute) {
-      const attributeTemplateStore = useAttributeTemplateStore()
-      await this.currentTemplate.data.document_attributes.push(attribute)
-      attributeTemplateStore.resetCurrentAttribute()
+      this.currentTemplate.document_attributes.push(attribute)
+      this.resetCurrentAttribute()
     },
 
-    async detachAttributesFromTemplate(attribute: TemplateAttribute) {
-      const attributeTemplateStore = useAttributeTemplateStore()
-      await attributeTemplateStore.deleteAttribute(attribute)
-      this.currentTemplate.data.document_attributes = this.currentTemplate.data.document_attributes.filter(attr => attr.name !== attribute.name)
+    async detachAttributesFromTemplate() {
+      const service = new TemplateService()
+      if (this.currentAttribute.id) {
+        await service.detachAttributeFromTemplate(this.currentAttribute.id, this.currentTemplate.id)
+      }
+      this.currentTemplate.document_attributes = this.currentTemplate.document_attributes.filter(
+        attr =>
+          attr.name !== this.currentAttribute.name,
+      )
+      this.resetCurrentAttribute()
+    },
+    async attachAttributeToTemplate() {
+      const service = new TemplateService()
+      this.loading = true
+      const response = await service.attachAttributeToTemplate(this.currentTemplate.id, this.currentAttribute)
+      this.error = response.error
+      this.status = response.status
+      this.resetCurrentAttribute()
+      await this.getTemplate(this.currentTemplate.id)
+      this.loading = false
+    },
+    resetCurrentAttribute() {
+      this.currentAttribute = TemplateAttributeInitializer.initState()
     },
     async createTemplate() {
-      const { $templateService } = useNuxtApp()
-      const attributeTemplateStore = useAttributeTemplateStore()
-
-      const response = await $templateService.createTemplate(this.currentTemplate.data)
-      if (response.error) {
-        this.currentTemplate = response
-        return
-      }
-      this.currentTemplate = await attributeTemplateStore.assignAttributesToTemplate(response.data.id, this.currentTemplate.data.document_attributes)
+      this.loading = true
+      const service = new TemplateService()
+      const response = await service.createTemplate(this.currentTemplate)
+      this.error = response.error
+      this.status = response.status
+      this.loading = false
     },
     async updateTemplate() {
-      const { $templateService } = useNuxtApp()
-      this.currentTemplate = await $templateService.updateTemplate(this.currentTemplate.data)
+      this.loading = true
+      const service = new TemplateService()
+      const response = await service.updateTemplate(this.currentTemplate)
+      this.error = response.error
+      this.status = response.status
+      this.loading = false
     },
     async fetchMyTemplates() {
-      const { $templateService } = useNuxtApp()
-      this.templates = await $templateService.fetchMyTemplates()
+      this.loading = true
+      const service = new TemplateService()
+      const response = await service.fetchMyTemplates()
+      this.templates = response.data
+      this.error = response.error
+      this.status = response.status
+      this.loading = false
+    },
+
+    async getTemplate(id: string) {
+      this.loading = true
+      const service = new TemplateService()
+      const response = await service.getTemplate(id)
+      this.currentTemplate = response.data
+      this.error = response.error
+      this.status = response.status
+      this.loading = false
     },
     async deleteTemplate() {
-      const { $templateService } = useNuxtApp()
-      this.currentTemplate = await $templateService.deleteTemplate(this.currentTemplate.data.id)
-      await this.fetchMyTemplates()
+      this.loading = true
+      const service = new TemplateService()
+      const response = await service.deleteTemplate(this.currentTemplate.id)
+      this.loading = false
+      this.error = response.error
+      if (!this.error) {
+        await this.fetchMyTemplates()
+      }
     },
 
     setCurrentTemplate(template: object) {
-      this.currentTemplate = BaseInitializer.initState(template)
+      this.currentTemplate = template
     },
     setCurrentTemplateById(templateId: number) {
-      this.currentTemplate = BaseInitializer.initState(this.templates.data.find(t => t.id === templateId))
+      this.currentTemplate = this.templates.find(t => t.id === templateId)
     },
     resetCurrentTemplate() {
-      this.currentTemplate = BaseInitializer.initState(TemplateInitializer.initState())
+      this.currentTemplate = TemplateInitializer.initState()
+    },
+    resetFeedback() {
+      this.status = 0
+      this.error = null
     },
   },
 })

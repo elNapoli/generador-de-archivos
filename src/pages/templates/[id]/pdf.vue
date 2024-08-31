@@ -12,7 +12,7 @@
     >
       <template #toolbar>
         <quill-toolbar
-          :custom-buttoms="currentTemplate.data.document_attributes"
+          :custom-buttoms="currentTemplate.document_attributes"
           @click="insertText($event)"
         />
       </template>

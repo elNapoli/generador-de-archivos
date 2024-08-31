@@ -29,6 +29,8 @@
 </template>
 
 <script setup>
+const route = useRoute()
+
 const templateStore = useTemplateStore()
 const { currentTemplate } = storeToRefs(templateStore)
 const showModal = computed(() => currentTemplate.value.status === 200)
@@ -38,6 +40,9 @@ const handleSuccess = async () => {
     path: `/templates`,
   })
 }
+onMounted(() => {
+  templateStore.getTemplate(route.params.id)
+})
 onUnmounted(() => {
   templateStore.resetCurrentTemplate()
 })

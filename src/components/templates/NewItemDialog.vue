@@ -17,7 +17,7 @@
               sm="6"
             >
               <v-text-field
-                v-model="currentAttribute.data.name"
+                v-model="currentAttribute.name"
                 label="Nombre*"
                 required
               />
@@ -29,7 +29,7 @@
               sm="6"
             >
               <v-select
-                v-model="currentAttribute.data.type"
+                v-model="currentAttribute.type"
                 :items="['String', 'Int']"
                 label="Tipo*"
                 required
@@ -42,7 +42,7 @@
               sm="6"
             >
               <v-checkbox
-                v-model="currentAttribute.data.required"
+                v-model="currentAttribute.required"
                 label="Obligatorio"
               />
             </v-col>
@@ -87,10 +87,9 @@ defineProps({
     required: true,
   },
 })
-const attributeTemplateStore = useAttributeTemplateStore()
 const templateStore = useTemplateStore()
 
-const { currentAttribute } = storeToRefs(attributeTemplateStore)
+const { currentAttribute } = storeToRefs(templateStore)
 
 const emit = defineEmits(['dialog:close'])
 
@@ -99,11 +98,11 @@ const closeDialog = () => {
 }
 
 const attachAttributesFromTemplate = () => {
-  templateStore.attachAttributesFromTemplate(currentAttribute.value.data)
+  templateStore.attachAttributesFromTemplate(currentAttribute.value)
   closeDialog()
 }
 const editAttribute = () => {
-  attributeTemplateStore.updateAttribute()
+  templateStore.attachAttributeToTemplate()
   closeDialog()
 }
 </script>

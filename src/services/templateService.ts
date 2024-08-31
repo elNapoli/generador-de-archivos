@@ -1,18 +1,13 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { type Template, TemplateInitializer } from '~/models/dto/Template'
-import type BaseResponse from '~/models/dto/BaseResponse'
-import { type TemplateAttribute, TemplateAttributeInitializer } from '~/models/dto/TemplateAttribute'
+import type { Template } from '~/models/dto/Template'
+import type { TemplateAttribute } from '~/models/dto/TemplateAttribute'
+import type { Database } from '~/types/database.types'
 
 class TemplateService {
   private supabase: SupabaseClient
 
-  constructor(supabase: SupabaseClient) {
-    this.supabase = supabase
-  }
-
-  // Utilidad para convertir a mayúsculas y reemplazar espacios por guiones bajos
-  private convertToUpperAndUnderscore(input: string): string {
-    return input.toUpperCase().replace(/\s+/g, '_')
+  constructor() {
+    this.supabase = useSupabaseClient<Database>()
   }
 
   async savePdfContent(tempalteId: number, jsonObject: JSON) {
@@ -25,148 +20,71 @@ class TemplateService {
   }
 
   async fetchMyTemplates() {
-    const query = this.supabase
-      .from('document_templates')
-      .select(`
-          id,
-          name,
-          description,
-          document_attributes(id, name, type, required, code_name),
-          content
-        `)
-    return safeApi(query, TemplateInitializer.initState())
+    const response = await this.supabase.functions.invoke(
+      'templates',
+      { method: 'GET' },
+    )
+    return JSON.parse(response.data)
   }
 
-  // Eliminar una plantilla por ID
+  async getTemplate(id: string) {
+    const response = await this.supabase.functions.invoke(
+      `templates/${id}`,
+      { method: 'GET' },
+    )
+    return JSON.parse(response.data)
+  }
+
   async deleteTemplate(id: number) {
-    const query = this.supabase
-      .from('document_templates')
-      .delete()
-      .eq('id', id)
-    return safeApi(query, TemplateInitializer.initState())
-  }
-
-  async removeAttributesFromTemplate(id: number) {
-    const query = this.supabase
-      .from('document_attributes')
-      .delete()
-      .eq('id', id)
-    return safeApi(query, TemplateAttributeInitializer.initState())
-  }
-
-  async updateAttribute(attribute: TemplateAttribute) {
-    const query = this.supabase
-      .from('document_attributes')
-      .update({
-        name: attribute.name,
-        required: attribute.required,
-        type: attribute.type,
+    const response = await this.supabase.functions.invoke(
+      `templates/${id}`,
+      {
+        method: 'DELETE',
       })
-      .eq('id', attribute.id)
+    return JSON.parse(response.data)
+  }
 
-    return safeApi(query, TemplateAttributeInitializer.initState())
+  async detachAttributeFromTemplate(attributeId: number, templateId: number) {
+    const response = await this.supabase.functions.invoke(
+      `templates/${templateId}/attributes/${attributeId}`,
+      {
+        method: 'DELETE',
+      })
+    return JSON.parse(response.data)
   }
 
   async updateTemplate(template: Template) {
-    const query = this.supabase
-      .from('document_templates')
-      .update({
-        name: template.name,
-        description: template.description,
+    return await this.supabase.functions.invoke(
+      `templates/${template.id}`,
+      {
+        body: JSON.stringify({ name: template.name, description: template.description }),
+        method: 'PATCH',
       })
-      .eq('id', template.id)
-      .select()
-      .single()
-    return safeApi(query, TemplateInitializer.initState())
+  }
+
+  async attachAttributeToTemplate(templateId: number, attribute: TemplateAttribute) {
+    const response = await this.supabase.functions.invoke(
+      `templates/${templateId}/attributes`,
+      {
+        body: JSON.stringify(attribute),
+        method: 'POST',
+      })
+    return JSON.parse(response.data)
   }
 
   async createTemplate(template: Template) {
-    const query = this.supabase
-      .from('document_templates')
-      .insert({
-        name: template.name,
-        description: template.description,
-      })
-      .select()
-      .single()
-    return safeApi(query, TemplateInitializer.initState())
-  }
-
-  async assignAttributesToTemplate(templateId, attributes): Promise<BaseResponse<TemplateAttribute>> {
-    let result = null
-    for (const attribute of attributes) {
-      const { id, ...attributeWithoutId } = attribute
-      const query = this.supabase
-        .from('document_attributes')
-        .insert({
-          template_id: templateId,
-          code_name: this.convertToUpperAndUnderscore(attribute.name),
-          ...attributeWithoutId,
-        })
-
-      result = await safeApi(query, TemplateInitializer.initState())
-
-      if (result.error) {
-        console.error(`Error al asignar atributo ${attribute.name}:`, result.error)
-        return result
-      }
-    }
-    return result
-  }
-
-  // Obtener los atributos actuales de la plantilla
-  private async fetchCurrentAttributes(templateId: number): Promise<DocumentAttribute[] | undefined> {
-    const { data, error } = await this.supabase
-      .from('document_attributes')
-      .select('id, name, code_name')
-      .eq('template_id', templateId)
-
-    if (error) {
-      console.error('Error al obtener los atributos actuales:', error)
-      return
-    }
-
-    return data
-  }
-
-  // Eliminar atributos que ya no están presentes en la nueva plantilla
-  private async deleteRemovedAttributes(
-    currentAttributes: DocumentAttribute[],
-    template: Template,
-  ) {
-    const newAttributeNames = new Set(template.document_attributes.map(attr => attr.name))
-    const attributesToDelete = currentAttributes.filter(attr => !newAttributeNames.has(attr.name))
-
-    if (attributesToDelete.length > 0) {
-      const attributeIdsToDelete = attributesToDelete.map(attr => attr.id)
-      const { error } = await this.supabase
-        .from('document_attributes')
-        .delete()
-        .in('id', attributeIdsToDelete)
-
-      if (error) {
-        console.error('Error al eliminar los atributos:', error)
-      }
-    }
-  }
-
-  // Insertar o actualizar los atributos restantes
-  private async upsertAttributes(templateId: number, attributes: DocumentAttribute[]) {
-    for (const attribute of attributes) {
-      const response = await this.supabase
-        .from('document_attributes')
-        .upsert({
-          template_id: templateId,
-          code_name: this.convertToUpperAndUnderscore(attribute.name),
-          ...attribute,
-        }, { onConflict: ['template_id', 'code_name'] })
-
-      return response
-      if (reponse.error) {
-        console.error('Error al insertar o actualizar un atributo:', error)
-        return
-      }
-    }
+    const response = await this.supabase.functions.invoke(
+      'templates',
+      {
+        body: JSON.stringify({
+          name: template.name,
+          description: template.description,
+          attributes: template.document_attributes,
+        }),
+        method: 'POST',
+      },
+    )
+    return JSON.parse(response.data)
   }
 }
 

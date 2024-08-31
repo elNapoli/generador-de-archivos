@@ -3,7 +3,16 @@
     <template #breadcrumbs>
       <Breadcrumb />
     </template>
-    <templates-form />
+    <loading-full-screen :loading="loading" />
+    <v-alert
+      v-if="error"
+      color="error"
+      icon="mdi:alert-circle"
+      :value="true"
+    >
+      {{ error?.message }}
+    </v-alert>
+    <templates-form class="my-3" />
     <div class="text-center pa-4">
       <v-dialog
         v-model="showModal"
@@ -29,9 +38,11 @@
 </template>
 
 <script setup>
+import LoadingFullScreen from '~/components/LoadingFullScreen.vue'
+
 const templateStore = useTemplateStore()
-const { currentTemplate } = storeToRefs(templateStore)
-const showModal = computed(() => currentTemplate.value.status === 201)
+const { loading, status, error } = storeToRefs(templateStore)
+const showModal = computed(() => status.value === 201)
 const handleSuccess = async () => {
   await navigateTo({
     path: `/templates`,
@@ -39,6 +50,9 @@ const handleSuccess = async () => {
 }
 onMounted(() => {
   templateStore.resetCurrentTemplate()
+})
+onUnmounted(() => {
+  templateStore.resetFeedback()
 })
 </script>
 

@@ -1,5 +1,5 @@
 import 'vuetify/styles'
-import type { IconSet, IconProps, IconAliases, ThemeDefinition } from 'vuetify'
+import type { IconAliases, IconProps, IconSet, ThemeDefinition } from 'vuetify'
 import { createVuetify } from 'vuetify'
 import { Icon } from '@iconify/vue'
 
@@ -32,7 +32,7 @@ const aliases: IconAliases = {
   cancel: 'close-circle',
   close: 'close',
   delete: 'close-circle',
-  // delete (e.g. v-chip close)
+  // _delete (e.g. v-chip close)
   clear: 'close-circle',
   success: 'check-circle',
   info: 'information',

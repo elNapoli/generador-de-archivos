@@ -1,12 +1,14 @@
 import { supabaseClient } from '../../_shared/supabaseClient.ts'
 
-export const updateDocument = async (authHeader, id, data) => {
+export const _update = async (authHeader, id, data) => {
   const supabase = supabaseClient(authHeader)
   return await supabase
-    .from('user_documents')
+    .from('document_templates')
     .update({
-      template_id: data.templateId,
-      attributes: data.attributesValue,
+      name: data.name,
+      description: data.description,
     })
     .eq('id', id)
+    .select()
+    .single()
 }

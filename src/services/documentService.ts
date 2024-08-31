@@ -9,29 +9,36 @@ class DocumentService {
   }
 
   async fetchMyDocuments() {
-    const response = await this.supabase.functions.invoke('document', { method: 'GET' })
+    const response = await this.supabase.functions.invoke(
+      'documents',
+      { method: 'GET' },
+    )
     return JSON.parse(response.data)
   }
 
-  async getPublicUrl(path) {
-    const { data } = this.supabase
-      .storage
-      .from('documents')
-      .getPublicUrl(path)
-
-    return data
+  async getPublicUrl(documentId) {
+    const response = await this.supabase.functions.invoke(
+      `documents/${documentId}/pdf-url`,
+      {
+        method: 'GET',
+      },
+    )
+    return JSON.parse(response.data)
   }
 
   async generatePdf(documentId) {
-    const { data, error } = await this.supabase.functions.invoke('generate-document', {
-      body: JSON.stringify({ documentId: documentId }),
-    })
-    return data
+    const response = await this.supabase.functions.invoke(
+      `documents/${documentId}/generate-pdf`,
+      {
+        method: 'POST',
+      },
+    )
+    return JSON.parse(response.data)
   }
 
   async deleteDocument(documentId) {
     const response = await this.supabase.functions.invoke(
-      `document/${documentId}`,
+      `documents/${documentId}`,
       {
         method: 'DELETE',
       })
@@ -39,18 +46,22 @@ class DocumentService {
   }
 
   async updateDocument(id: string, templateId: number, attributesValue: string) {
-    console.log('adsfadfasdf')
-    return await this.supabase.functions.invoke(`document/${id}`, {
-      body: JSON.stringify({ templateId: templateId, attributesValue: attributesValue }),
-      method: 'PATCH',
-    })
+    return await this.supabase.functions.invoke(
+      `documents/${id}`,
+      {
+        body: JSON.stringify({ templateId: templateId, attributesValue: attributesValue }),
+        method: 'PATCH',
+      })
   }
 
   async createDocument(name: string, templateId: number, attributesValue: string) {
-    return await this.supabase.functions.invoke('document', {
-      body: JSON.stringify({ name: name, templateId: templateId, attributesValue: attributesValue }),
-      method: 'POST',
-    })
+    return await this.supabase.functions.invoke(
+      'documents',
+      {
+        body: JSON.stringify({ name: name, templateId: templateId, attributesValue: attributesValue }),
+        method: 'POST',
+      },
+    )
   }
 }
 

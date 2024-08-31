@@ -8,17 +8,17 @@
       placeholder="Ej: Contrato de arriendo entre ANA (17536925) y PEDRO (17536925)"
     />
     <v-select
-      v-model="currentTemplate.data"
-      :model-value="currentTemplate.data"
+      v-model="currentTemplate"
+      :model-value="currentTemplate"
       label="Plantilla"
-      :items="templates.data"
+      :items="templates"
       return-object
       item-title="name"
       item-value="id"
       @update:model-value="documentStore.resetAttributesValue()"
     />
     <v-text-field
-      v-for="i in currentTemplate.data.document_attributes"
+      v-for="i in currentTemplate.document_attributes"
       :key="i.id"
 
       v-model="currentDocument.data.attributes[i.code_name]"

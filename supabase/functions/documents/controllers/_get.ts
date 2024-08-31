@@ -1,6 +1,6 @@
 import { supabaseClient } from '../../_shared/supabaseClient.ts'
 
-export const getDocument = async (authHeader, id) => {
+export const _get = async (authHeader, id) => {
   const supabase = supabaseClient(authHeader)
   return await supabase
     .from('user_documents')

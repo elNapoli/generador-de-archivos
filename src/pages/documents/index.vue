@@ -23,7 +23,7 @@
             prepend-icon="mdi:file-plus"
             text="Crear formulario"
             variant="tonal"
-            to="/documents/create"
+            to="/documents/_create"
           />
           <templates-new-item-dialog
             :item="currentAttribute"
@@ -63,10 +63,10 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <template #item.path="{ value }">
+      <template #item.path="{ item }">
         <v-chip
-          v-if="value"
-          @click="documentStore.getPublicUrl(value)"
+          v-if="item.path"
+          @click="documentStore.getPublicUrl(item.id)"
         >
           Documento
         </v-chip>
@@ -82,7 +82,6 @@
           class="mr-2"
           icon="bxs:file-export"
           color="blue"
-          :disabled="!item.document_templates.content"
           @click="documentStore.generatePdf(item.id)"
         />
         <v-icon

@@ -9,20 +9,20 @@
       {{ currentTemplate.error?.message }}
     </v-alert>
     <v-text-field
-      v-model="currentTemplate.data.name"
+      v-model="currentTemplate.name"
       :counter="50"
       label="Nombre"
     />
     <v-textarea
-      v-model="currentTemplate.data.description"
+      v-model="currentTemplate.description"
       :counter="500"
       label="Descripción"
     />
     <templates-item-attribute-table
       class="my-4"
       :enable-edit="templateStore.editMode"
-      :template-id="currentTemplate.data.id"
-      :data="currentTemplate.data.document_attributes"
+      :template-id="currentTemplate.id"
+      :data="currentTemplate.document_attributes"
     />
     <v-btn
       :loading="loading"

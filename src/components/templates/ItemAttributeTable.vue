@@ -109,9 +109,8 @@ const props = defineProps({
     default: null,
   },
 })
-const attributeTemplateStore = useAttributeTemplateStore()
 const templateStore = useTemplateStore()
-const { currentAttribute } = storeToRefs(attributeTemplateStore)
+const { currentAttribute } = storeToRefs(templateStore)
 const headers = [
   {
     title: 'Nombre',
@@ -124,7 +123,7 @@ const headers = [
 ]
 
 const editItem = (item) => {
-  attributeTemplateStore.setCurrentAttribute(item)
+  templateStore.setCurrentAttribute(item)
   dialog.value = true
 }
 const getColor = (value) => {
@@ -133,7 +132,7 @@ const getColor = (value) => {
 }
 
 const deleteItem = (item) => {
-  attributeTemplateStore.setCurrentAttribute(item)
+  templateStore.setCurrentAttribute(item)
   dialogDelete.value = true
 }
 const deleteItemConfirm = () => {

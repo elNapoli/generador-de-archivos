@@ -31,12 +31,12 @@ const items = [
   },
   {
     title: 'Mis plantillas',
-    icon: 'mdi:document',
+    icon: 'mdi:documents',
     href: '/templates',
   },
   {
     title: 'Formularios',
-    icon: 'mdi:file-document-arrow-right-outline',
+    icon: 'mdi:file-documents-arrow-right-outline',
     href: '/documents',
   },
 ]
