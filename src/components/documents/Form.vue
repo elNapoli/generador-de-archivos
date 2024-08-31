@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit">
     <v-text-field
-      v-model="currentDocument.data.name"
+      v-model="currentDocument.name"
       :disabled="documentStore.editMode"
       :counter="50"
       label="Nombre del documento"
@@ -21,7 +21,7 @@
       v-for="i in currentTemplate.document_attributes"
       :key="i.id"
 
-      v-model="currentDocument.data.attributes[i.code_name]"
+      v-model="currentDocument.attributes[i.code_name]"
       :label="i.name"
     />
     <v-btn
@@ -42,10 +42,10 @@ const { currentDocument } = storeToRefs(documentStore)
 const { templates, currentTemplate } = storeToRefs(templateStore)
 const handleSubmit = async () => {
   if (documentStore.editMode) {
-    await documentStore.updateDocument(currentTemplate.value.data.id)
+    await documentStore.updateDocument(currentTemplate.value.id)
   }
   else {
-    await documentStore.createDocument(currentTemplate.value.data.id)
+    await documentStore.createDocument(currentTemplate.value.id)
   }
   await navigateTo({
     path: `/documents`,

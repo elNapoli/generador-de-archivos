@@ -46,22 +46,24 @@ class DocumentService {
   }
 
   async updateDocument(id: string, templateId: number, attributesValue: string) {
-    return await this.supabase.functions.invoke(
+    const response = await this.supabase.functions.invoke(
       `documents/${id}`,
       {
         body: JSON.stringify({ templateId: templateId, attributesValue: attributesValue }),
         method: 'PATCH',
       })
+    return JSON.parse(response.data)
   }
 
   async createDocument(name: string, templateId: number, attributesValue: string) {
-    return await this.supabase.functions.invoke(
+    const response = await this.supabase.functions.invoke(
       'documents',
       {
         body: JSON.stringify({ name: name, templateId: templateId, attributesValue: attributesValue }),
         method: 'POST',
       },
     )
+    return JSON.parse(response.data)
   }
 }
 

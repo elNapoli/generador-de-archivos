@@ -5,7 +5,13 @@ export const _fetch = async (authHeader) => {
   const supabase = supabaseClient(authHeader)
   const response = await supabase
     .from('document_templates')
-    .select()
+    .select(`
+      id,
+      name,
+      description,
+      content,
+      document_attributes(id, name, type, required, code_name)
+    `)
     .returns()
   return defaultData([], response)
 }

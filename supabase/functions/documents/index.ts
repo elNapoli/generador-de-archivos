@@ -34,7 +34,6 @@ app.patch('/:id', async (c) => {
   const auth = c.req.header('Authorization')
   const data = await c.req.json()
   const response = await _update(auth, id, data)
-  console.log(response)
   return new Response(JSON.stringify(response))
 })
 

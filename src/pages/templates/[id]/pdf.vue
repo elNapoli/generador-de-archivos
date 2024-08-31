@@ -35,7 +35,7 @@ import Delta from 'quill-delta'
 const quillDescr = ref(null)
 const templateStore = useTemplateStore()
 const { currentTemplate } = storeToRefs(templateStore)
-const quillContent = ref(new Delta(currentTemplate.value.data.content))
+const quillContent = ref(new Delta(currentTemplate.value.content))
 
 const insertText = (newText) => {
   const quill = quillDescr.value.getQuill()
@@ -50,6 +50,6 @@ const savePdfTemplate = async () => {
 }
 
 watch(quillContent, (newValue) => {
-  currentTemplate.value.data.content = newValue
+  currentTemplate.value.content = newValue
 }, { deep: true })
 </script>

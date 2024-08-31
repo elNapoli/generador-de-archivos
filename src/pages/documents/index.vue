@@ -6,9 +6,13 @@
     <v-data-table
       :headers="headers"
       :hide-default-footer="true"
-      :items="documents.data"
+      :items="documents"
+      :loading="loading"
       :sort-by="[{ key: 'name', order: 'asc' }]"
     >
+      <template #loading>
+        <v-skeleton-loader type="table-row@10" />
+      </template>
       <template #top>
         <v-toolbar>
           <v-toolbar-title>Documentos</v-toolbar-title>
@@ -23,7 +27,7 @@
             prepend-icon="mdi:file-plus"
             text="Crear formulario"
             variant="tonal"
-            to="/documents/_create"
+            to="/documents/create"
           />
           <templates-new-item-dialog
             :item="currentAttribute"
@@ -66,7 +70,7 @@
       <template #item.path="{ item }">
         <v-chip
           v-if="item.path"
-          @click="documentStore.getPublicUrl(item.id)"
+          @click="downloadDocument(item.id)"
         >
           Documento
         </v-chip>
@@ -115,7 +119,7 @@ defineProps({
 })
 const templateStore = useTemplateStore()
 const documentStore = useDocumentStore()
-const { documents, publicUrl } = storeToRefs(documentStore)
+const { documents, publicUrl, loading, error } = storeToRefs(documentStore)
 
 const headers = [
   {
@@ -154,10 +158,13 @@ onMounted(() => {
   documentStore.fetchMyDocuments()
   templateStore.fetchMyTemplates()
 })
-
-watch(publicUrl, async (newPublicUrl, _) => {
-  if (newPublicUrl) {
-    await navigateTo(newPublicUrl.publicUrl, { external: true, open: { target: '_blank' } })
+const downloadDocument = async (id) => {
+  const response = await documentStore.getPublicUrl(id)
+  if (response.error) {
+    console.log(response.error)
   }
-})
+  else {
+    await navigateTo(response.publicUrl, { external: true, open: { target: '_blank' } })
+  }
+}
 </script>

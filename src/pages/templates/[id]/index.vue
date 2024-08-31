@@ -43,9 +43,6 @@ const handleSuccess = async () => {
 onMounted(() => {
   templateStore.getTemplate(route.params.id)
 })
-onUnmounted(() => {
-  templateStore.resetCurrentTemplate()
-})
 </script>
 
 <style scoped>
