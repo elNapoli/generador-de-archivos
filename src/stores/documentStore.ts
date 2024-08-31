@@ -27,7 +27,6 @@ export const useDocumentStore = defineStore('documentStore', {
       const service = new DocumentService()
       const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
       const response = await service.createDocument(this.currentDocument.name, templateId, attributesValueJson)
-      console.log('baldomero', response)
       this.error = response.error
       this.status = response.status
       this.currentDocument = response.data
@@ -53,8 +52,7 @@ export const useDocumentStore = defineStore('documentStore', {
     },
     async generatePdf(documentId) {
       const service = new DocumentService()
-      const response = await service.generatePdf(documentId)
-      console.log(response)
+      await service.generatePdf(documentId)
       await this.fetchMyDocuments()
     },
     async deleteDocument() {

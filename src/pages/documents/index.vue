@@ -164,7 +164,7 @@ const downloadDocument = async (id) => {
     console.log(response.error)
   }
   else {
-    await navigateTo(response.publicUrl, { external: true, open: { target: '_blank' } })
+    await navigateTo(response.data.publicUrl, { external: true, open: { target: '_blank' } })
   }
 }
 </script>
