@@ -23,7 +23,7 @@ export const generatePdf = async (authHeader, id) => {
   try {
     const data = query.data
 
-    const temp = replaceTemplatePlaceholders(data.document_templates.content, JSON.parse(data.attributes))
+    const temp = replaceTemplatePlaceholders(JSON.parse(data.document_templates.content), data.attributes)
     const deltaObject = new Delta(temp)
     const blob = await pdf.pdfExporter.generatePdf(deltaObject)
     const response = await supabase

@@ -12,7 +12,7 @@ export const TemplateAttributeInitializer = {
       id: null,
       name: null,
       required: false,
-      type: 'String',
+      type: 'Texto',
     }
   },
 }

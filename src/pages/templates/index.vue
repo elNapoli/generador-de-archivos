@@ -5,8 +5,7 @@
     </template>
     <v-alert
       v-if="error"
-      color="error"
-      icon="mdi:alert-circle"
+      type="error"
       :value="true"
     >
       {{ error?.message }}
@@ -24,7 +23,7 @@
         </template>
         <template #top>
           <v-toolbar>
-            <v-toolbar-title>Plantillas</v-toolbar-title>
+            <v-toolbar-title>Mis documentos</v-toolbar-title>
             <v-divider
               class="mx-4"
               inset
@@ -34,7 +33,7 @@
             <v-btn
               class="text-none font-weight-regular"
               prepend-icon="mdi:file-plus"
-              text="Agregar plantilla"
+              text="Crear documento"
               variant="tonal"
               to="/templates/create"
             />
@@ -52,7 +51,7 @@
             >
               <v-card>
                 <v-card-title>
-                  ¿Seguro que deseas eliminar este atributo?
+                  ¿Seguro que deseas eliminar este documento?
                 </v-card-title>
                 <v-card-actions>
                   <v-spacer />

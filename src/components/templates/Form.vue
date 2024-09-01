@@ -3,7 +3,7 @@
     <v-alert
       v-if="currentTemplate.error"
       class="my-4"
-      color="error"
+      type="error"
       icon="mdi:alert-circle"
     >
       {{ currentTemplate.error?.message }}
@@ -30,7 +30,7 @@
       type="submit"
       block
     >
-      {{ templateStore.editMode ? 'Actualizar plantilla' : 'Crear plantilla' }}
+      {{ templateStore.editMode ? 'Actualizar documento' : 'Crear documento' }}
     </v-btn>
   </form>
 </template>

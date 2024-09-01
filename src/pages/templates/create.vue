@@ -6,8 +6,7 @@
     <loading-full-screen :loading="loading" />
     <v-alert
       v-if="error"
-      color="error"
-      icon="mdi:alert-circle"
+      type="error"
       :value="true"
     >
       {{ error?.message }}
@@ -21,7 +20,7 @@
       >
         <v-card
           prepend-icon="mdi-map-marker"
-          text="Template creado con éxito"
+          text="Documento creado con éxito, ahora define el archivo"
           title="Operación exitosa"
         >
           <template #actions>

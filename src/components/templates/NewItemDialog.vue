@@ -30,7 +30,7 @@
             >
               <v-select
                 v-model="currentAttribute.type"
-                :items="['String', 'Int']"
+                :items="['Texto', 'Número', 'Fecha']"
                 label="Tipo*"
                 required
               />

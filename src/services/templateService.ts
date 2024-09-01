@@ -19,6 +19,19 @@ class TemplateService {
       .eq('id', tempalteId)
   }
 
+  async transformDocxToHtmlAndSaveIntoTable(file: number, templateId: number) {
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await this.supabase.functions.invoke(
+      `templates/${templateId}/transform-doc-to-html`,
+      {
+        method: 'POST',
+        body: formData,
+      },
+    )
+    return JSON.parse(response.data)
+  }
+
   async fetchMyTemplates() {
     const response = await this.supabase.functions.invoke(
       'templates',

@@ -48,7 +48,7 @@ app.post('/:id/generate-pdf', async (c) => {
   const id = c.req.param('id')
   const auth = c.req.header('Authorization')
   const data = await generatePdf(auth, id)
-  return new Response(JSON.stringify(data))
+  return new Response(JSON.stringify([data]))
 })
 
 app.get('/:id/pdf-url', async (c) => {

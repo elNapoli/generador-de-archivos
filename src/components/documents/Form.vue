@@ -40,6 +40,7 @@ const templateStore = useTemplateStore()
 const documentStore = useDocumentStore()
 const { currentDocument } = storeToRefs(documentStore)
 const { templates, currentTemplate } = storeToRefs(templateStore)
+
 const handleSubmit = async () => {
   if (documentStore.editMode) {
     await documentStore.updateDocument(currentTemplate.value.id)

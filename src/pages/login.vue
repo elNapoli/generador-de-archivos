@@ -25,8 +25,7 @@
                 <v-alert
                   v-if="error"
                   class="my-4"
-                  color="error"
-                  icon="mdi:alert-circle"
+                  type="error"
                   :text="error"
                 />
                 <v-text-field

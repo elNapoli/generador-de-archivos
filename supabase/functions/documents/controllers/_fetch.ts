@@ -8,6 +8,7 @@ export const _fetch = async (authHeader) => {
           id,
           generated_at,
           attributes,
+          template_id,
           name,
           path
         `).returns()

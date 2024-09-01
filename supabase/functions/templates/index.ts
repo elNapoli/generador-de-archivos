@@ -1,4 +1,6 @@
+import mammoth from 'npm:mammoth'
 import { honoObject } from '../_shared/honoObject.ts'
+import { supabaseClient } from '../_shared/supabaseClient.ts'
 import { _fetch } from './controllers/_fetch.ts'
 import { _create } from './controllers/_create.ts'
 import { _get } from './controllers/_get.ts'
@@ -58,6 +60,25 @@ app.delete('/:id/attributes/:attribute-id', async (c) => {
   const auth = c.req.header('Authorization')
   const data = await detachAttributeFromTemplate(auth, attributeId, id)
   return new Response(JSON.stringify(data))
+})
+
+app.post('/:id/transform-doc-to-html', async (c) => {
+  const id = c.req.param('id')
+  const auth = c.req.header('Authorization')
+
+  const formData = await c.req.formData()
+  const file = formData.get('file') as File
+
+  const arrayBuffer = await file.arrayBuffer()
+  const response = await mammoth.convertToHtml({ buffer: arrayBuffer })
+  const supabase = supabaseClient(auth)
+  const responseQuery = await supabase
+    .from('document_templates')
+    .update({
+      content: response.value,
+    })
+    .eq('id', id)
+  return new Response(JSON.stringify(responseQuery))
 })
 
 Deno.serve(app.fetch)

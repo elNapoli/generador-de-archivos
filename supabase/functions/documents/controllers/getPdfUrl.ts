@@ -7,10 +7,10 @@ export const getPdfUrl = async (authHeader, id) => {
     .select()
     .eq('id', id).single()
   if (query.data) {
-    const response = supabase
+    const response = await supabase
       .storage
       .from('documents')
-      .getPublicUrl(query.data.path)
+      .createSignedUrl(query.data.path, 3600)
     return {
       data: response.data,
       status: 200,

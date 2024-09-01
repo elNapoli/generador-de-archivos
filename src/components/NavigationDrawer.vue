@@ -25,12 +25,12 @@
 <script setup>
 const items = [
   {
-    title: 'Crear plantillas',
+    title: 'Crear documento',
     icon: 'mdi:folder-wrench',
     href: '/templates/create',
   },
   {
-    title: 'Mis plantillas',
+    title: 'Mis documento',
     icon: 'mdi:documents',
     href: '/templates',
   },

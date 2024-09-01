@@ -29,6 +29,18 @@ export const useTemplateStore = defineStore('templateStore', {
         },
       )
     },
+    async transformDocxToHtmlAndSaveIntoTable(file) {
+      await handleAsyncAction(
+        this,
+        async () => {
+          const service = new TemplateService()
+          return await service.transformDocxToHtmlAndSaveIntoTable(file, this.currentTemplate.id)
+        },
+        () => {
+          this.getTemplate(this.currentTemplate.id)
+        },
+      )
+    },
     async attachAttributesFromTemplate(attribute: DocumentAttribute) {
       this.currentTemplate.document_attributes.push(attribute)
       this.resetCurrentAttribute()

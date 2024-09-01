@@ -9,7 +9,7 @@ const home = (disabled) => {
 
 const template = (disabled) => {
   return {
-    title: 'Plantillas',
+    title: 'Documentos',
     disabled: disabled,
     to: '/templates',
   }

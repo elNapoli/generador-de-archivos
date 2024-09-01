@@ -6,9 +6,8 @@
     <v-row>
       <v-alert
         class="my-4"
-        color="info"
-        text="En esta sección, usted puede visualizar todos los formularios con respuestas y generar el documento en formato PDF para su uso según lo desee. usuario Free solo puede generar 5 documentos"
-        icon="mdi:info"
+        type="info"
+        :text="textHelper"
       />
 
       <v-data-table
@@ -37,13 +36,6 @@
               variant="tonal"
               to="/documents/create"
             />
-            <templates-new-item-dialog
-              :item="currentAttribute"
-              :title="formTitle"
-              :open="dialog"
-              @dialog:close="dialog=false"
-              @update:item="templateStore.createOrEditAttribute($event)"
-            />
 
             <v-dialog
               v-model="dialogDelete"
@@ -51,7 +43,7 @@
             >
               <v-card>
                 <v-card-title>
-                  ¿Seguro que deseas eliminar este documento?
+                  ¿Seguro que deseas eliminar este formulario?
                 </v-card-title>
                 <v-card-actions>
                   <v-spacer />
@@ -128,8 +120,10 @@ defineProps({
 })
 const templateStore = useTemplateStore()
 const documentStore = useDocumentStore()
-const { documents, publicUrl, loading, error } = storeToRefs(documentStore)
-
+const { documents, loading, error } = storeToRefs(documentStore)
+const textHelper = `En esta sección, podrá visualizar todos los formularios con sus respuestas y generar el documento
+en formato PDF según sus necesidades. Tenga en cuenta que los usuarios Free tienen un límite de hasta 5 documentos que
+ pueden generar. ¡Esperamos que esta funcionalidad le sea de gran utilidad!`
 const headers = [
   {
     title: 'Nombre',
@@ -156,8 +150,8 @@ const deleteItem = (item) => {
   documentStore.setCurrentDocument(item)
   dialogDelete.value = true
 }
-const deleteItemConfirm = () => {
-  documentStore.deleteDocument()
+const deleteItemConfirm = async () => {
+  await documentStore.deleteDocument()
   closeDelete()
 }
 const closeDelete = () => {
@@ -173,7 +167,7 @@ const downloadDocument = async (id) => {
     console.log(response.error)
   }
   else {
-    await navigateTo(response.data.publicUrl, { external: true, open: { target: '_blank' } })
+    await navigateTo(response.data.signedUrl, { external: true, open: { target: '_blank' } })
   }
 }
 </script>

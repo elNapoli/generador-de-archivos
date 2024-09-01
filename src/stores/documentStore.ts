@@ -22,11 +22,10 @@ export const useDocumentStore = defineStore('documentStore', {
         this,
         async () => {
           const service = new DocumentService()
-          const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
-          return await service.createDocument(this.currentDocument.name, templateId, attributesValueJson)
+          return await service.createDocument(this.currentDocument.name, templateId, this.currentDocument.attributes)
         },
         (response) => {
-          this.currentDocument = response.data
+          this.resetCurrentDocument()
         },
       )
     },
@@ -39,8 +38,7 @@ export const useDocumentStore = defineStore('documentStore', {
         this,
         async () => {
           const service = new DocumentService()
-          const attributesValueJson = JSON.stringify(this.currentDocument.attributes)
-          return await service.updateDocument(this.currentDocument.id, templateId, attributesValueJson)
+          return await service.updateDocument(this.currentDocument.id, templateId, this.currentDocument.attributes)
         },
         (response) => {
           this.currentDocument = response.data
@@ -74,15 +72,19 @@ export const useDocumentStore = defineStore('documentStore', {
         this,
         async () => {
           const service = new DocumentService()
-          await service.deleteDocument(this.currentDocument.id)
+          return await service.deleteDocument(this.currentDocument.id)
         },
         async () => {
           await this.fetchMyDocuments()
+          await this.resetCurrentDocument()
         },
       )
     },
     setCurrentDocument(item) {
       this.currentDocument = item
+    },
+    resetCurrentDocument() {
+      this.currentDocument = DocumentInitializer.initState()
     },
     resetAttributesValue() {
       this.currentDocument.attributes = {}
