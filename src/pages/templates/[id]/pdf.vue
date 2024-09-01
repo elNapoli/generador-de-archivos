@@ -64,10 +64,8 @@ const transformDocxToHtml = async (f) => {
   await templateStore.transformDocxToHtmlAndSaveIntoTable(f)
   loadContentIntoQuill()
 }
-
 onMounted(async () => {
   await templateStore.getTemplate(route.params.id)
-
   loadContentIntoQuill()
 })
 const loadContentIntoQuill = () => {
@@ -76,10 +74,8 @@ const loadContentIntoQuill = () => {
   }
   catch (e) {
     try {
-      console.log('entre', currentTemplate.value.content)
       const quill = quillDescr.value.getQuill()
       const delta = quill.clipboard.convert(currentTemplate.value.content)
-      console.log(delta)
 
       quillContent.value = new Delta(delta)
     }

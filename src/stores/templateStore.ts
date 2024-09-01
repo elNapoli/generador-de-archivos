@@ -25,21 +25,14 @@ export const useTemplateStore = defineStore('templateStore', {
         this,
         async () => {
           const service = new TemplateService()
-          await service.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
+          return service.savePdfContent(this.currentTemplate.id, this.currentTemplate.content)
         },
       )
     },
     async transformDocxToHtmlAndSaveIntoTable(file) {
-      await handleAsyncAction(
-        this,
-        async () => {
-          const service = new TemplateService()
-          return await service.transformDocxToHtmlAndSaveIntoTable(file, this.currentTemplate.id)
-        },
-        () => {
-          this.getTemplate(this.currentTemplate.id)
-        },
-      )
+      const service = new TemplateService()
+      await service.transformDocxToHtmlAndSaveIntoTable(file, this.currentTemplate.id)
+      await this.getTemplate(this.currentTemplate.id)
     },
     async attachAttributesFromTemplate(attribute: DocumentAttribute) {
       this.currentTemplate.document_attributes.push(attribute)
