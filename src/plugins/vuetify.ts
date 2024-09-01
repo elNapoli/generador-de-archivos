@@ -22,6 +22,7 @@ const myTheme: ThemeDefinition = {
     success: '#69b32f',
     headerAux: '#0e68b2',
     cardBG: '#f8f9fa',
+    background: '#FAFAFA',
   },
 }
 

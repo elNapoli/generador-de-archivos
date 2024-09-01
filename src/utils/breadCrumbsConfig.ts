@@ -1,19 +1,32 @@
 // Definición de items estáticos
-const home = {
-  title: 'Home',
-  disabled: false,
-  to: '/',
+const home = (disabled) => {
+  return {
+    title: 'home',
+    disabled: disabled,
+    to: '/',
+  }
 }
 
-const template = {
-  title: 'Plantillas',
-  disabled: false,
-  to: '/templates',
+const template = (disabled) => {
+  return {
+    title: 'Plantillas',
+    disabled: disabled,
+    to: '/templates',
+  }
 }
-const documents = {
-  title: 'Formularios',
-  disabled: false,
-  to: '/documents',
+const documents = (disabled) => {
+  return {
+    title: 'Formularios',
+    disabled: disabled,
+    to: '/documents',
+  }
+}
+const subscription = (disabled) => {
+  return {
+    title: 'Planes',
+    disabled: disabled,
+    to: '/subscriptions',
+  }
 }
 
 // Función para generar un breadcrumb dinámico basado en el ID del template
@@ -35,30 +48,26 @@ function generateDocumentBreadcrumb(id, disabled: boolean) {
 
 // Configuración de breadcrumbs
 export const breadcrumbsConfig = {
-  '/templates/create': [home, template, {
+  '/templates/create': [home(false), template(false), {
     title: 'Crear',
     disabled: true,
   }],
-  '/templates': [home, {
-    title: 'Plantillas',
-    disabled: true,
-  }],
-  '/templates/:id': params => [home, template, generateTemplateBreadcrumb(params.id, true)],
-  '/templates/:id/pdf': params => [home, template, generateTemplateBreadcrumb(params.id, false), {
+  '/templates': [home(false), template(true)],
+  '/templates/:id': params => [home(false), template(false), generateTemplateBreadcrumb(params.id, true)],
+  '/templates/:id/pdf': params => [home(false), template(false), generateTemplateBreadcrumb(params.id, false), {
     title: 'pdf',
     disabled: true,
   }],
-  '/': [{
-    title: 'Home',
-    disabled: true,
-  }],
-  '/documents/create': [home, documents, {
+  '/': [home(true)],
+  '/documents/create': [home(false), documents(false), {
     title: 'Crear',
     disabled: true,
   }],
-  '/documents': [home, {
-    title: 'Formularios',
+  '/subscriptions': [home(false), {
+    title: 'Planes',
     disabled: true,
   }],
-  '/documents/:id': params => [home, documents, generateDocumentBreadcrumb(params.id, true)],
+  '/subscriptions/:id': params => [home(false), subscription(false), generateTemplateBreadcrumb(params.id, true)],
+  '/documents': [home(false), documents(true)],
+  '/documents/:id': params => [home(false), documents(false), generateDocumentBreadcrumb(params.id, true)],
 }

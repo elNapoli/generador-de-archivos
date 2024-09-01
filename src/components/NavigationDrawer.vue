@@ -36,8 +36,13 @@ const items = [
   },
   {
     title: 'Formularios',
-    icon: 'mdi:file-documents-arrow-right-outline',
+    icon: 'mdi:file-documents',
     href: '/documents',
+  },
+  {
+    title: 'Suscripciones',
+    icon: 'mdi:money',
+    href: '/subscriptions',
   },
 ]
 const emit = defineEmits(['drawer:close'])
